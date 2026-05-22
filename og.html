@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gaegu:wght@700&family=Jua&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --ocean:#0077b6; --pool:#0096c7; --aqua:#48cae4; --sky:#90e0ef; --foam:#caf0f8;
+    --sun:#ffd60a; --mango:#ff9e00; --coral:#ff5d73; --pink:#ff7eb6; --cream:#fffaf0; --ink:#063047;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ font-family:'Pretendard',system-ui,sans-serif; }
+  .font-display{ font-family:'Black Han Sans',sans-serif; }
+  .font-round{ font-family:'Jua',sans-serif; }
+  .font-hand{ font-family:'Gaegu',cursive; }
+
+  .og{
+    width:1200px; height:630px; position:relative; overflow:hidden; color:#fff;
+    background:
+      radial-gradient(120% 90% at 88% -10%, rgba(255,214,10,.65), transparent 50%),
+      radial-gradient(110% 90% at 0% 120%, rgba(255,93,115,.45), transparent 50%),
+      linear-gradient(155deg,#48cae4 0%,#0096c7 45%,#0077b6 100%);
+  }
+  /* caustics */
+  .caustics{
+    position:absolute; inset:0; opacity:.5; mix-blend-mode:overlay;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,.4) 0 14px, transparent 16px),
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,.3) 0 10px, transparent 12px),
+      radial-gradient(circle at 45% 85%, rgba(255,255,255,.35) 0 8px, transparent 10px);
+    background-size:240px 240px,300px 300px,200px 200px;
+  }
+  /* bubbles */
+  .bubble{ position:absolute; border-radius:9999px;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,.2));
+    box-shadow:inset 0 0 8px rgba(255,255,255,.6); }
+
+  .wrap{ position:relative; z-index:2; height:100%; display:flex; align-items:center; padding:54px 60px; }
+
+  .left{ flex:1; }
+  .badge{ display:inline-flex; align-items:center; gap:8px;
+    background:#fff; color:var(--ocean); font-weight:800; font-size:26px;
+    padding:12px 26px; border-radius:9999px; border:3px solid var(--ink);
+    box-shadow:4px 5px 0 var(--ink); }
+  h1{ margin-top:22px; line-height:.92; filter:drop-shadow(4px 6px 0 rgba(6,48,71,.35)); }
+  h1 .l1{ display:block; font-size:130px; color:var(--sun); }
+  h1 .l2{ display:block; font-size:138px; color:#fff; }
+
+  .sub{ margin-top:24px; display:flex; gap:12px; flex-wrap:wrap; }
+  .chip{ font-family:'Jua',sans-serif; font-size:30px; background:rgba(255,255,255,.18);
+    border:2.5px solid #fff; border-radius:9999px; padding:8px 22px; backdrop-filter:blur(2px); }
+  .chip b{ color:var(--sun); }
+
+  /* right: D-day + steak */
+  .right{ width:360px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; }
+  .dday{ background:#fff; color:var(--ink); border:3px solid var(--ink); border-radius:30px;
+    box-shadow:6px 7px 0 var(--ink); padding:20px 34px; text-align:center; transform:rotate(-4deg); }
+  .dday .t{ font-family:'Gaegu',cursive; font-weight:700; font-size:30px; color:var(--coral); line-height:1; }
+  .dday .d{ font-family:'Black Han Sans',sans-serif; font-size:78px; line-height:.95; }
+  .dday .w{ font-family:'Jua',sans-serif; font-size:30px; color:var(--pool); }
+
+  .steak{ position:relative; }
+  .steak .plate{
+    width:230px; height:230px; border-radius:50%;
+    background:radial-gradient(circle at 50% 30%, rgba(255,214,10,.95), transparent 60%),
+      linear-gradient(155deg,#ff9e00,#ff5d73);
+    border:4px solid var(--ink); box-shadow:6px 8px 0 var(--ink), 0 0 60px rgba(255,158,0,.6);
+    display:flex; align-items:center; justify-content:center; }
+  .steak .emoji{ font-size:140px; filter:drop-shadow(2px 4px 0 rgba(6,48,71,.45)); transform:rotate(-6deg); }
+  .steak .fire{ position:absolute; top:-18px; right:6px; font-size:64px; }
+  .steak .label{ position:absolute; bottom:-22px; left:50%; transform:translateX(-50%) rotate(3deg);
+    background:var(--ink); color:var(--sun); font-family:'Black Han Sans',sans-serif; font-size:30px;
+    padding:6px 22px; border-radius:9999px; white-space:nowrap; box-shadow:3px 3px 0 rgba(0,0,0,.2); }
+</style>
+</head>
+<body>
+<div class="og">
+  <div class="caustics"></div>
+  <span class="bubble" style="width:90px;height:90px;left:30%;top:18%;opacity:.5"></span>
+  <span class="bubble" style="width:46px;height:46px;left:8%;top:62%;opacity:.45"></span>
+  <span class="bubble" style="width:30px;height:30px;left:54%;top:78%;opacity:.5"></span>
+  <span class="bubble" style="width:60px;height:60px;left:62%;top:10%;opacity:.35"></span>
+
+  <div class="wrap">
+    <div class="left">
+      <div class="badge">🤝 제로벨 7시 강습 단합 데이</div>
+      <h1>
+        <span class="l1">통일로</span>
+        <span class="l2">원정수영</span>
+      </h1>
+      <div class="sub">
+        <span class="chip">🥩 <b>고기파티</b></span>
+        <span class="chip">🐬 핀 릴레이</span>
+        <span class="chip">🍻 뒷풀이</span>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="dday">
+        <div class="t">D-DAY</div>
+        <div class="d">6.19</div>
+        <div class="w">금요일 🌊</div>
+      </div>
+      <div class="steak">
+        <div class="plate"><span class="emoji">🥩</span></div>
+        <span class="fire">🔥</span>
+        <span class="label">지글지글 ~</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
