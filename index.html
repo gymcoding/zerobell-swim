@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>제로벨 7시 강습 ⚡ 통일로 원정수영 (6/19 금)</title>
+
+<!-- OG / 단톡방 공유 미리보기 -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="제로벨 7시 강습 ⚡ 통일로 원정수영 가자! (6/19 금)">
+<meta property="og:description" content="고기 굽고 🥩 마니또 🎁 팀전 릴레이 🏊 다 같이 놀다 오자! 하실 분은 오픈채팅으로 고고~">
+<meta property="og:locale" content="ko_KR">
+<meta name="theme-color" content="#0096c7">
+
+<!-- Tailwind CSS v4 (browser CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gaegu:wght@700&family=Jua&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+
+<style>
+  :root{
+    --ocean:#0077b6;
+    --pool:#0096c7;
+    --aqua:#48cae4;
+    --sky:#90e0ef;
+    --foam:#caf0f8;
+    --sun:#ffd60a;
+    --mango:#ff9e00;
+    --coral:#ff5d73;
+    --pink:#ff7eb6;
+    --cream:#fffaf0;
+    --ink:#063047;
+  }
+  *{ -webkit-tap-highlight-color: transparent; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family:'Pretendard','Pretendard Variable',system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--cream);
+    overflow-x:hidden;
+    -webkit-text-size-adjust:100%;
+  }
+  .font-display{ font-family:'Black Han Sans',sans-serif; }
+  .font-hand{ font-family:'Gaegu',cursive; }
+  .font-round{ font-family:'Jua',sans-serif; }
+
+  /* ===== Aurora / pool atmosphere ===== */
+  .pool-bg{
+    background:
+      radial-gradient(120% 80% at 80% -10%, rgba(255,214,10,.55), transparent 55%),
+      radial-gradient(120% 90% at 0% 10%, rgba(255,93,115,.40), transparent 50%),
+      linear-gradient(160deg,#48cae4 0%,#0096c7 45%,#0077b6 100%);
+  }
+  .caustics{
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,.25) 0 8px, transparent 9px),
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,.18) 0 6px, transparent 7px),
+      radial-gradient(circle at 45% 80%, rgba(255,255,255,.20) 0 5px, transparent 6px);
+    background-size:140px 140px,180px 180px,120px 120px;
+    animation:drift 14s linear infinite;
+  }
+  @keyframes drift{ to{ background-position:140px 0,-180px 90px,90px -120px; } }
+
+  /* ===== Bubbles ===== */
+  .bubble{
+    position:absolute; bottom:-40px; border-radius:9999px;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,.15));
+    box-shadow:inset 0 0 6px rgba(255,255,255,.6);
+    animation:rise linear infinite;
+    pointer-events:none;
+  }
+  @keyframes rise{
+    0%{ transform:translateY(0) scale(.6); opacity:0; }
+    15%{ opacity:.85; }
+    100%{ transform:translateY(-115vh) scale(1.1); opacity:0; }
+  }
+
+  /* ===== Entrance ===== */
+  @keyframes pop{ 0%{ transform:translateY(28px) scale(.96); opacity:0; } 100%{ transform:none; opacity:1; } }
+  .reveal{ opacity:0; }
+  .reveal.in{ animation:pop .7s cubic-bezier(.2,.9,.25,1) forwards; }
+
+  @keyframes wobble{ 0%,100%{ transform:rotate(-2.5deg); } 50%{ transform:rotate(2.5deg); } }
+  .wobble{ animation:wobble 3.2s ease-in-out infinite; }
+
+  @keyframes floaty{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-9px); } }
+  .floaty{ animation:floaty 3s ease-in-out infinite; }
+
+  @keyframes bob{ 0%,100%{ transform:translateY(0) rotate(-3deg);} 50%{ transform:translateY(-6px) rotate(3deg);} }
+
+  /* sticker card */
+  .sticker{
+    border:3px solid var(--ink);
+    box-shadow:5px 6px 0 var(--ink);
+    border-radius:26px;
+    background:#fff;
+  }
+  .tag{
+    border:2.5px solid var(--ink);
+    box-shadow:3px 3px 0 var(--ink);
+    border-radius:9999px;
+  }
+  .marker{ background:linear-gradient(transparent 58%, var(--sun) 58% 92%, transparent 92%); }
+
+  /* CTA pulse */
+  @keyframes pulseRing{ 0%{ box-shadow:0 0 0 0 rgba(255,93,115,.55);} 70%{ box-shadow:0 0 0 16px rgba(255,93,115,0);} 100%{ box-shadow:0 0 0 0 rgba(255,93,115,0);} }
+  .cta-pulse{ animation:pulseRing 2.2s infinite; }
+
+  .safe-bottom{ padding-bottom:calc(14px + env(safe-area-inset-bottom)); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; scroll-behavior:auto; }
+    .reveal{ opacity:1; }
+  }
+</style>
+</head>
+
+<body class="antialiased">
+
+<!-- 데스크탑에서도 모바일 폭으로 중앙 정렬 -->
+<div class="relative mx-auto w-full max-w-[460px] bg-cream overflow-hidden" style="background:var(--cream)">
+
+  <!-- ============ HERO ============ -->
+  <header class="pool-bg relative overflow-hidden text-white pt-12 pb-24 px-5">
+    <div class="caustics absolute inset-0 opacity-60 mix-blend-overlay"></div>
+    <!-- bubbles -->
+    <div id="bubbles" class="absolute inset-0"></div>
+
+    <div class="relative z-10 text-center">
+      <div class="reveal inline-flex items-center gap-1.5 tag bg-white text-[var(--ocean)] px-4 py-1.5 text-sm font-extrabold" style="animation-delay:.05s">
+        🏊 제로벨 7시 강습 단체전
+      </div>
+
+      <h1 class="reveal font-display leading-[0.95] mt-5 drop-shadow-[3px_4px_0_rgba(6,48,71,.35)]" style="animation-delay:.15s">
+        <span class="block text-[15vw] max-[460px]:text-[clamp(40px,15vw,70px)] text-[var(--sun)]">통일로</span>
+        <span class="block text-[16vw] max-[460px]:text-[clamp(46px,16vw,76px)] text-white">원정수영</span>
+      </h1>
+
+      <p class="reveal font-round text-lg mt-4 text-white/95" style="animation-delay:.28s">
+        다 같이 놀러 가자! 안 가면 진짜 후회각 🤙
+      </p>
+
+      <!-- D-day plate -->
+      <div class="reveal mt-7 flex justify-center" style="animation-delay:.4s">
+        <div class="sticker wobble text-[var(--ink)] px-6 py-3 inline-flex items-end gap-3">
+          <div class="text-left">
+            <div class="font-hand text-base leading-none text-[var(--coral)] font-bold">D-DAY</div>
+            <div class="font-display text-4xl leading-none">6.19</div>
+          </div>
+          <div class="font-round text-lg pb-0.5">금요일<br><span class="text-sm text-[var(--pool)]">통일워터파크</span></div>
+        </div>
+      </div>
+
+      <a href="https://open.kakao.com/o/g188H7vi" target="_blank" rel="noopener" class="reveal mt-8 inline-block w-full" style="animation-delay:.52s">
+        <span class="cta-pulse block w-full font-round text-xl text-white bg-[var(--coral)] border-[3px] border-[var(--ink)] rounded-[20px] py-4 shadow-[4px_5px_0_var(--ink)] active:translate-y-1 active:shadow-[2px_2px_0_var(--ink)] transition-all">
+          👉 나도 갈래! 오픈채팅 들어가기
+        </span>
+      </a>
+      <p class="reveal text-white/80 text-xs mt-2 font-round" style="animation-delay:.6s">강습 단톡방 멤버라면 누구나 환영 🙌</p>
+    </div>
+
+    <!-- wave divider -->
+    <svg class="absolute -bottom-1 left-0 w-full" viewBox="0 0 460 60" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,30 C90,60 150,5 230,25 C320,48 380,8 460,28 L460,60 L0,60 Z" fill="var(--cream)"/>
+    </svg>
+  </header>
+
+  <main class="px-5 pb-40 -mt-2">
+
+    <!-- ============ 한눈에 보기 ============ -->
+    <section class="reveal grid grid-cols-2 gap-3 mt-6">
+      <div class="sticker p-4 floaty"><div class="text-3xl">📅</div><div class="font-round text-sm text-[var(--pool)] mt-1">언제</div><div class="font-display text-xl">6/19 (금)</div></div>
+      <div class="sticker p-4 floaty" style="animation-delay:.2s"><div class="text-3xl">⏰</div><div class="font-round text-sm text-[var(--pool)] mt-1">몇 시</div><div class="font-display text-xl">9시~18시</div></div>
+      <div class="sticker p-4 floaty" style="animation-delay:.4s"><div class="text-3xl">📍</div><div class="font-round text-sm text-[var(--pool)] mt-1">어디서</div><div class="font-display text-lg leading-tight">통일워터파크</div></div>
+      <div class="sticker p-4 floaty" style="animation-delay:.6s"><div class="text-3xl">🎟️</div><div class="font-round text-sm text-[var(--pool)] mt-1">입장료</div><div class="font-display text-xl">1만원</div></div>
+    </section>
+
+    <!-- ============ 먹거리 (메인) ============ -->
+    <section class="reveal mt-10">
+      <div class="flex items-center gap-2">
+        <span class="text-3xl bob inline-block">🥩</span>
+        <h2 class="font-display text-3xl"><span class="marker">고기 굽는다!</span></h2>
+      </div>
+      <div class="sticker mt-4 p-5" style="background:linear-gradient(180deg,#fff,#fff7e6)">
+        <p class="font-round text-lg leading-relaxed">우리는 <b class="text-[var(--coral)]">직접 장 봐서</b> 가서<br>현장에서 <b class="text-[var(--mango)]">지글지글 구워 먹어요!</b> 🔥</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="tag bg-[var(--foam)] px-3 py-1 text-sm font-bold">불판</span>
+          <span class="tag bg-[var(--foam)] px-3 py-1 text-sm font-bold">버너</span>
+          <span class="tag bg-[var(--foam)] px-3 py-1 text-sm font-bold">집게</span>
+          <span class="tag bg-[var(--foam)] px-3 py-1 text-sm font-bold">가위</span>
+          <span class="tag bg-[var(--foam)] px-3 py-1 text-sm font-bold">냄비</span>
+        </div>
+        <p class="font-round text-sm text-[var(--pool)] mt-2">↑ 매점에서 대여 가능해요</p>
+        <div class="mt-4 flex items-start gap-2 bg-[var(--coral)]/10 border-2 border-dashed border-[var(--coral)] rounded-2xl p-3">
+          <span class="text-xl">⚡</span>
+          <p class="font-round text-[15px] leading-snug"><b>전기 사용 불가!</b> 그래서 <b>가스버너 필수</b>예요. (매점에서 빌리면 OK 👌)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 요금/시간 ============ -->
+    <section class="reveal mt-10">
+      <div class="flex items-center gap-2">
+        <span class="text-3xl">💸</span>
+        <h2 class="font-display text-3xl"><span class="marker">요금 & 시간</span></h2>
+      </div>
+      <div class="sticker mt-4 p-5 space-y-3 font-round text-[15px]">
+        <div class="flex justify-between items-center"><span>🎟️ 입장권 (성인·소인)</span><b class="font-display text-lg">각 10,000원</b></div>
+        <div class="h-px bg-[var(--ink)]/10"></div>
+        <div class="flex justify-between items-center"><span>🏖️ 방갈로·평상·테이블</span><b class="font-display text-lg">각 10,000원</b></div>
+        <div class="h-px bg-[var(--ink)]/10"></div>
+        <div class="flex justify-between items-center"><span>⏰ 운영 시간</span><b>9시 ~ 18시</b></div>
+        <div class="h-px bg-[var(--ink)]/10"></div>
+        <div class="flex justify-between items-center"><span>💳 예약</span><b>선착순 현장결제</b></div>
+        <p class="text-xs text-[var(--pool)] pt-1">* 소인 = 12개월~초등학생 / 중학생부터 대인</p>
+      </div>
+    </section>
+
+    <!-- ============ 정산 1/N ============ -->
+    <section class="reveal mt-10">
+      <div class="sticker p-5 text-center" style="background:linear-gradient(180deg,#e8fbff,#fff)">
+        <div class="text-4xl floaty inline-block">🧮</div>
+        <h2 class="font-display text-2xl mt-1">정산은 깔끔하게</h2>
+        <div class="font-display text-5xl text-[var(--coral)] my-2">1 / N</div>
+        <p class="font-round text-[15px] leading-relaxed">장보기 + 티켓팅(입장료) + 방갈로/대여까지<br><b>모든 비용은 똑같이 나눠요!</b> 부담 제로 👍</p>
+      </div>
+    </section>
+
+    <!-- ============ 이벤트 ============ -->
+    <section class="reveal mt-10">
+      <div class="flex items-center gap-2">
+        <span class="text-3xl wobble inline-block">🎉</span>
+        <h2 class="font-display text-3xl"><span class="marker">오늘의 이벤트</span></h2>
+      </div>
+
+      <div class="sticker mt-4 p-5" style="background:linear-gradient(180deg,#fff,#ffeef5)">
+        <div class="flex items-center gap-2"><span class="text-2xl">🎁</span><h3 class="font-round text-xl font-bold">마니또</h3></div>
+        <p class="font-round text-[15px] leading-relaxed mt-2">각자 집에서 <b class="text-[var(--coral)]">5천원 이하 물건</b> 하나씩 챙겨오기!<br>그걸로 <b>마음의 선물</b> 주고받아요 🤍 누가 내 마니또일까?</p>
+      </div>
+
+      <div class="sticker mt-4 p-5" style="background:linear-gradient(180deg,#fff,#eafff4)">
+        <div class="flex items-center gap-2"><span class="text-2xl bob inline-block">🏊</span><h3 class="font-round text-xl font-bold">팀전 릴레이 수영 경기</h3></div>
+        <p class="font-round text-[15px] leading-relaxed mt-2">현장에서 <b class="text-[var(--pool)]">2~3팀</b>으로 나눠서 릴레이 대결!<br>강습 실력 발휘할 시간 🔥 진 팀은… 글쎄요? 😏</p>
+      </div>
+    </section>
+
+    <!-- ============ 준비물 ============ -->
+    <section class="reveal mt-10">
+      <div class="flex items-center gap-2">
+        <span class="text-3xl">🎒</span>
+        <h2 class="font-display text-3xl"><span class="marker">준비물 체크</span></h2>
+      </div>
+      <div class="sticker mt-4 p-5 space-y-2.5 font-round text-[15px]">
+        <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 accent-[var(--coral)]"><span>🩴 <b>아쿠아슈즈</b> <span class="text-[var(--coral)] text-sm">(신발 금지! 아쿠아슈즈만 OK)</span></span></label>
+        <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 accent-[var(--coral)]"><span>👙 수영복 · 수건</span></label>
+        <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 accent-[var(--coral)]"><span>🦺 구명조끼 / 숏핀 <span class="text-[var(--pool)] text-sm">(선택)</span></span></label>
+        <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 accent-[var(--coral)]"><span>🧴 선크림 · 돗자리</span></label>
+        <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 accent-[var(--coral)]"><span>🎁 <b>마니또 선물</b> <span class="text-[var(--coral)] text-sm">(5천원 이하)</span></span></label>
+        <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 accent-[var(--coral)]"><span>🛟 튜브 <span class="text-[var(--pool)] text-sm">(100cm 미만만 가능)</span></span></label>
+      </div>
+    </section>
+
+    <!-- ============ 꼭 읽기 ============ -->
+    <section class="reveal mt-10">
+      <div class="flex items-center gap-2">
+        <span class="text-3xl">⚠️</span>
+        <h2 class="font-display text-3xl text-[var(--coral)]">꼭 읽어줘!</h2>
+      </div>
+      <div class="mt-4 p-5 rounded-[26px] border-[3px] border-[var(--coral)] shadow-[5px_6px_0_var(--coral)] bg-white">
+        <p class="font-round font-bold text-[var(--coral)] mb-2">🚫 반입·사용 금지</p>
+        <div class="flex flex-wrap gap-2 font-round text-sm">
+          <span class="tag px-3 py-1" style="border-color:var(--coral);box-shadow:2px 2px 0 var(--coral)">신발</span>
+          <span class="tag px-3 py-1" style="border-color:var(--coral);box-shadow:2px 2px 0 var(--coral)">유리병</span>
+          <span class="tag px-3 py-1" style="border-color:var(--coral);box-shadow:2px 2px 0 var(--coral)">대형 튜브(100cm↑)</span>
+          <span class="tag px-3 py-1" style="border-color:var(--coral);box-shadow:2px 2px 0 var(--coral)">글리터 튜브</span>
+          <span class="tag px-3 py-1" style="border-color:var(--coral);box-shadow:2px 2px 0 var(--coral)">물풍선</span>
+          <span class="tag px-3 py-1" style="border-color:var(--coral);box-shadow:2px 2px 0 var(--coral)">스티로폼</span>
+        </div>
+        <div class="h-px bg-[var(--coral)]/20 my-4"></div>
+        <p class="font-round font-bold text-[var(--ink)] mb-1">🦶 핀 사용 규칙</p>
+        <ul class="font-round text-[14px] leading-relaxed list-disc pl-5 space-y-0.5">
+          <li><b>롱핀</b>: 평일만 가능 → 6/19 금요일은 OK <span class="text-[var(--pool)]">(단, 사람 많으면 제한)</span></li>
+          <li><b>숏핀</b>: 사용 가능</li>
+          <li><b>머메이드핀</b>: 일절 불가 🧜‍♀️❌</li>
+        </ul>
+        <p class="font-round text-sm text-[var(--pool)] mt-3">👮 현장 안전요원 지시에 꼭 따라주세요!</p>
+      </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section class="reveal mt-10">
+      <div class="flex items-center gap-2">
+        <span class="text-3xl">💬</span>
+        <h2 class="font-display text-3xl"><span class="marker">자주 묻는 질문</span></h2>
+      </div>
+      <div class="mt-4 space-y-2.5">
+        <details class="sticker p-4 group">
+          <summary class="font-round font-bold text-[15px] flex justify-between items-center cursor-pointer list-none">예약되나요?<span class="transition-transform group-open:rotate-45 text-[var(--coral)] text-xl">+</span></summary>
+          <p class="font-round text-[14px] text-[var(--ink)]/80 mt-2">예약 안 돼요! <b>선착순 현장결제</b>입니다.</p>
+        </details>
+        <details class="sticker p-4 group">
+          <summary class="font-round font-bold text-[15px] flex justify-between items-center cursor-pointer list-none">방갈로 인원 제한 있나요?<span class="transition-transform group-open:rotate-45 text-[var(--coral)] text-xl">+</span></summary>
+          <p class="font-round text-[14px] text-[var(--ink)]/80 mt-2">1자리는 인원 무관, <b>2자리 이상은 인원 수에 맞춰</b> 대여해야 해요.</p>
+        </details>
+        <details class="sticker p-4 group">
+          <summary class="font-round font-bold text-[15px] flex justify-between items-center cursor-pointer list-none">전기 쓸 수 있나요?<span class="transition-transform group-open:rotate-45 text-[var(--coral)] text-xl">+</span></summary>
+          <p class="font-round text-[14px] text-[var(--ink)]/80 mt-2">전 좌석 <b>전기 사용 불가</b>예요. 그래서 가스버너 챙겨요! ⚡</p>
+        </details>
+        <details class="sticker p-4 group">
+          <summary class="font-round font-bold text-[15px] flex justify-between items-center cursor-pointer list-none">야간 개장 하나요?<span class="transition-transform group-open:rotate-45 text-[var(--coral)] text-xl">+</span></summary>
+          <p class="font-round text-[14px] text-[var(--ink)]/80 mt-2">수질 관리를 위해 <b>야간 개장은 안 해요.</b> 6시에 폐장!</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============ 오시는 길 / 카풀 ============ -->
+    <section id="join" class="reveal mt-10">
+      <div class="flex items-center gap-2">
+        <span class="text-3xl">🚗</span>
+        <h2 class="font-display text-3xl"><span class="marker">오시는 길 & 카풀</span></h2>
+      </div>
+      <div class="sticker mt-4 p-5">
+        <p class="font-round text-[15px]">📍 경기도 고양시 덕양구 대양로 25<br><b class="font-display text-lg">통일워터파크</b></p>
+        <div class="grid grid-cols-2 gap-2 mt-4">
+          <a href="https://map.kakao.com/?q=통일워터파크" target="_blank" rel="noopener" class="tag bg-[var(--sun)] py-2.5 text-center font-round font-bold active:translate-y-0.5 transition">카카오맵</a>
+          <a href="https://map.naver.com/v5/search/통일워터파크" target="_blank" rel="noopener" class="tag bg-[#c6f6d5] py-2.5 text-center font-round font-bold active:translate-y-0.5 transition">네이버지도</a>
+        </div>
+        <div class="mt-4 flex items-start gap-2 bg-[var(--foam)] rounded-2xl p-3">
+          <span class="text-xl">🏝️</span>
+          <p class="font-round text-[15px] leading-snug">우리 모두 <b>영종도</b>에 살죠! 차량·카풀은 <b class="text-[var(--coral)]">오픈채팅방에서</b> 같이 정해요~</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 최종 CTA ============ -->
+    <section class="reveal mt-12 text-center">
+      <h2 class="font-display text-3xl leading-tight">같이 가면 <span class="text-[var(--coral)]">10배</span><br>재밌는 거 알죠? 😎</h2>
+      <p class="font-round text-[15px] text-[var(--ink)]/70 mt-3">하실 분은 지금 바로 오픈채팅으로 고고!</p>
+      <a href="https://open.kakao.com/o/g188H7vi" target="_blank" rel="noopener" class="mt-5 inline-block w-full">
+        <span class="block w-full font-round text-xl text-white pool-bg border-[3px] border-[var(--ink)] rounded-[20px] py-4 shadow-[4px_5px_0_var(--ink)] active:translate-y-1 active:shadow-[2px_2px_0_var(--ink)] transition-all">
+          💬 오픈채팅방 입장하기
+        </span>
+      </a>
+    </section>
+
+    <footer class="text-center mt-12 font-hand text-[var(--pool)] text-lg">
+      제로벨 7시 강습 · 통일로 원정수영 🌊<br>
+      <span class="text-sm text-[var(--ink)]/50 font-round">2026. 6. 19 (금)</span>
+    </footer>
+  </main>
+
+  <!-- ============ STICKY 하단 CTA ============ -->
+  <div class="fixed left-1/2 -translate-x-1/2 bottom-0 z-50 w-full max-w-[460px] px-4 pt-2 safe-bottom bg-gradient-to-t from-[var(--cream)] via-[var(--cream)] to-transparent">
+    <a href="https://open.kakao.com/o/g188H7vi" target="_blank" rel="noopener"
+       class="cta-pulse flex items-center justify-center gap-2 w-full font-round text-lg text-white bg-[var(--coral)] border-[3px] border-[var(--ink)] rounded-full py-3.5 shadow-[3px_4px_0_var(--ink)] active:translate-y-1 active:shadow-[1px_1px_0_var(--ink)] transition-all">
+      <span class="text-xl">💬</span> 나도 갈래! 오픈채팅 입장
+    </a>
+  </div>
+
+</div>
+
+<script>
+  // 버블 생성
+  (function(){
+    const wrap = document.getElementById('bubbles');
+    if(!wrap) return;
+    const N = 14;
+    for(let i=0;i<N;i++){
+      const b = document.createElement('span');
+      b.className = 'bubble';
+      const size = 6 + Math.random()*22;
+      b.style.width = b.style.height = size+'px';
+      b.style.left = (Math.random()*100)+'%';
+      b.style.animationDuration = (6 + Math.random()*7)+'s';
+      b.style.animationDelay = (Math.random()*6)+'s';
+      wrap.appendChild(b);
+    }
+  })();
+
+  // 스크롤 등장
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{ threshold:.12 });
+  document.querySelectorAll('.reveal').forEach((el,i)=>{
+    // 히어로 내부는 즉시 노출되도록 처리
+    if(el.closest('header')){ el.classList.add('in'); return; }
+    io.observe(el);
+  });
+</script>
+</body>
+</html>
