@@ -113,14 +113,14 @@ export function HomeScreen() {
 
       <div className="mt-6 space-y-4">
         <Link
-          href="/carpool"
+          href="/room/carpool"
           className="btn-3d w-full rounded-[24px] bg-sun font-round text-2xl flex items-center justify-center gap-3"
           style={{ minHeight: '104px' }}
         >
           <span className="text-4xl">🚗</span> 카풀 매칭
         </Link>
         <Link
-          href="/shop"
+          href="/room/shop"
           className="btn-3d w-full rounded-[24px] bg-aqua text-white font-round text-2xl flex items-center justify-center gap-3"
           style={{ minHeight: '104px' }}
         >
@@ -130,7 +130,7 @@ export function HomeScreen() {
 
       <div className="mt-7 flex items-center justify-between gap-3">
         <Link
-          href="/status"
+          href="/room/status"
           className="tag bg-white px-4 py-2.5 min-h-[44px] font-round text-[16px] active:translate-y-0.5 transition flex items-center gap-1.5"
         >
           <ClipboardList className="w-5 h-5" /> 카풀 현황
