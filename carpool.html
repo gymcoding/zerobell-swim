@@ -232,11 +232,9 @@ const CONFIG = {
 };
 
 const API = `https://api.jsonbin.io/v3/b/${CONFIG.BIN_ID}`;
-const HEADERS = {
-  "Content-Type": "application/json",
-  "X-Master-Key": CONFIG.MASTER_KEY,
-  "X-Bin-Meta": "false"   // 응답에서 record만 받기
-};
+// CORS preflight 표면을 줄이려 커스텀 헤더는 최소화 (X-Master-Key만)
+const GET_HEADERS = { "X-Master-Key": CONFIG.MASTER_KEY };
+const PUT_HEADERS = { "Content-Type": "application/json", "X-Master-Key": CONFIG.MASTER_KEY };
 
 /* ---------- DOM ---------- */
 const $ = (id) => document.getElementById(id);
@@ -293,11 +291,24 @@ function remaining(ride, bookings){
 }
 
 /* ---------- 네트워크 (GET-merge-PUT) ---------- */
+let lastError = "";   // 화면 디버그용 마지막 에러
+
 async function getData(){
-  const res = await fetch(API + "/latest", { headers: HEADERS });
-  if(!res.ok) throw new Error("GET " + res.status);
+  let res;
+  try{
+    res = await fetch(API + "/latest", { headers: GET_HEADERS });
+  }catch(e){
+    lastError = "네트워크/CORS 차단 (fetch 실패) — " + e.message;
+    throw new Error(lastError);
+  }
+  if(!res.ok){
+    const body = await res.text().catch(()=> "");
+    lastError = `GET ${res.status} ${res.statusText} ${body.slice(0,120)}`;
+    throw new Error(lastError);
+  }
+  lastError = "";
   const json = await res.json();
-  // X-Bin-Meta:false → record 본문이 곧 응답
+  // 응답 형태(record 래핑 여부) 양쪽 모두 허용
   const rec = (json && json.record) ? json.record : json;
   return {
     rides:    Array.isArray(rec?.rides) ? rec.rides : [],
@@ -306,12 +317,19 @@ async function getData(){
 }
 
 async function putData(next){
-  const res = await fetch(API, {
-    method: "PUT",
-    headers: HEADERS,
-    body: JSON.stringify(next),
-  });
-  if(!res.ok) throw new Error("PUT " + res.status);
+  let res;
+  try{
+    res = await fetch(API, { method: "PUT", headers: PUT_HEADERS, body: JSON.stringify(next) });
+  }catch(e){
+    lastError = "네트워크/CORS 차단 (PUT fetch 실패) — " + e.message;
+    throw new Error(lastError);
+  }
+  if(!res.ok){
+    const body = await res.text().catch(()=> "");
+    lastError = `PUT ${res.status} ${res.statusText} ${body.slice(0,120)}`;
+    throw new Error(lastError);
+  }
+  lastError = "";
   return next;
 }
 
@@ -494,7 +512,7 @@ async function withBusy(btn, fn){
     await fn();
   }catch(e){
     console.error(e);
-    toast(`⚠️ 통신 오류가 났어요.<br><button onclick="refresh()" class="underline font-bold">다시 시도</button>`, "err");
+    toast(`⚠️ 통신 오류: <b>${escapeHtml(e.message)}</b><br><button onclick="refresh()" class="underline font-bold">다시 시도</button>`, "err");
   }finally{
     btn.disabled = prev;
   }
@@ -520,7 +538,7 @@ async function refresh(){
     els.statusMeta.textContent = `마지막 갱신 ${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}:${String(t.getSeconds()).padStart(2,"0")} · 약 ${CONFIG.POLL_MS/1000}초마다 자동 갱신`;
   }catch(e){
     console.error(e);
-    els.statusMeta.textContent = "⚠️ 불러오기 실패 — 새로고침을 눌러 다시 시도";
+    els.statusMeta.innerHTML = `⚠️ 불러오기 실패 — <b>${escapeHtml(e.message)}</b>`;
   }finally{
     els.refreshIcon.classList.remove("spin");
   }
