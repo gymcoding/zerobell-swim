@@ -1,3 +1,9 @@
+/**
+ * 변경 reducer — 순수하지만 전달받은 `db`를 **제자리 변형**한다(`.push`/`.find` 후 대입).
+ * 호출자가 반드시 먼저 clone 해야 한다(서버: `commitServer`의 `structuredClone`,
+ * 클라: 낙관적 업데이트 시 캐시 clone). 같은 reducer를 클라/서버가 공유(DRY).
+ * `null` 반환 = 변경 없음/검증·소유권 실패.
+ */
 import type { DB } from './db-types';
 import { MAX_SEATS } from './db-types';
 import { remaining, nextRideId, nextItemId, nextCommentId } from './domain';
