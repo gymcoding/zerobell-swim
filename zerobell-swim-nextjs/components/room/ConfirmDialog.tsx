@@ -19,7 +19,9 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     <Ctx.Provider value={confirm}>
       {children}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className={cn('max-w-[360px]')}>
+        {/* 브랜드 스티커 룩: base-nova DialogContent의 기본 유틸을 이기도록 유틸로 override
+            (color는 토큰 유틸 border-ink/bg-white, 모양·그림자는 1회성 arbitrary — 정당) */}
+        <DialogContent className={cn('max-w-[360px] border-[3px] border-ink rounded-[26px] bg-white shadow-[5px_6px_0_var(--color-ink)]')}>
           <DialogHeader><DialogTitle className="font-display text-xl">확인</DialogTitle></DialogHeader>
           <div className="font-round text-base">{msg}</div>
           <DialogFooter className="gap-2">
