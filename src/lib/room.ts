@@ -184,7 +184,7 @@ function renderComments(data: DB) {
   list.innerHTML = sorted.map((c) => {
     const mineC = !!meName && c.by === meName;
     const del = mineC
-      ? `<button data-delc="${c.id}" aria-label="삭제" class="shrink-0 text-[var(--coral)] px-2 py-1">${ICON_TRASH}</button>`
+      ? `<button data-delc="${c.id}" aria-label="삭제" class="shrink-0 text-[var(--coral)] grid place-items-center" style="min-width:44px;min-height:44px;">${ICON_TRASH}</button>`
       : '';
     return `
       <div class="sticker p-3 flex items-start gap-2">
@@ -216,7 +216,7 @@ function renderShop(data: DB) {
       ? `<span class="shrink-0 tag ${mineItem ? 'bg-[var(--sun)]' : 'bg-[var(--foam)]'} px-2.5 py-1 font-round text-[13px] max-w-[84px] truncate">${escapeHtml(it.addedBy)}</span>`
       : `<span class="shrink-0 w-[52px]"></span>`;
     const trash = mineItem
-      ? `<button data-del="${it.id}" aria-label="삭제" class="shrink-0 text-[var(--coral)] px-2 py-2">${ICON_TRASH}</button>`
+      ? `<button data-del="${it.id}" aria-label="삭제" class="shrink-0 text-[var(--coral)] grid place-items-center" style="min-width:44px;min-height:44px;">${ICON_TRASH}</button>`
       : '';
     return `
       <div class="sticker p-4 flex items-center gap-3">

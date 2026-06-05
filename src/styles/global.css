@@ -20,7 +20,8 @@
   --ink:#063047;
 }
 *{ -webkit-tap-highlight-color: transparent; }
-html{ scroll-behavior:smooth; background:var(--cream); }
+/* 더블탭 줌 + 300ms 탭 지연 제거 (핀치 줌은 유지 → 접근성 보존) */
+html{ scroll-behavior:smooth; background:var(--cream); touch-action:manipulation; }
 body{
   font-family:'Pretendard','Pretendard Variable',system-ui,sans-serif;
   color:var(--ink);

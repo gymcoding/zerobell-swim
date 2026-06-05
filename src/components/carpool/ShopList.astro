@@ -9,7 +9,7 @@ import { Icon } from 'astro-icon/components';
   <div class="sticker p-3 mt-3">
     <div class="flex gap-2 items-stretch">
       <input id="quickName" class="field font-round" style="font-size:18px; padding:14px;"
-             type="text" maxlength="30" placeholder="살 거 입력 (예: 삼겹살)" autocomplete="off" />
+             type="text" maxlength="30" placeholder="살 거 입력 (예: 삼겹살)" aria-label="살 거 입력" autocomplete="off" />
       <button id="quickAdd" type="button" aria-label="추가"
               class="btn-3d rounded-[16px] bg-[var(--coral)] text-white px-5 shrink-0 grid place-items-center">
         <Icon name="lucide:plus" class="w-7 h-7" />
@@ -32,7 +32,7 @@ import { Icon } from 'astro-icon/components';
     <div class="sticker p-3 mt-3">
       <div class="flex gap-2 items-stretch">
         <input id="commentInput" class="field font-round" style="font-size:18px; padding:14px;"
-               type="text" maxlength="100" placeholder="의견을 적어주세요" autocomplete="off" />
+               type="text" maxlength="100" placeholder="의견을 적어주세요" aria-label="의견 입력" autocomplete="off" />
         <button id="commentBtn" type="button"
                 class="btn-3d rounded-[16px] bg-[var(--aqua)] text-white font-round text-lg px-4 shrink-0">
           남기기
