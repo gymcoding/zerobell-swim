@@ -54,6 +54,20 @@ zerobell-swim-nextjs/
 
 ---
 
+## UI 코딩 규칙 (시니어 표준 — 공식문서·실무 4팀 검증 반영)
+
+모든 UI 태스크(10~16)는 아래를 따른다. "동작은 shadcn, 정체성은 브랜드"를 **제자리 리스타일**로 구현한다(wrapper·별도 primitive 레이어 금지).
+
+1. **브랜드 색은 `@theme`에 등록 → 진짜 유틸 생성.** `:root` + `bg-[var(--coral)]` arbitrary 값 **금지**(주니어 형태·tailwind-merge 미인식·자동완성 없음). `@theme { --color-coral: #ff5d73; … }` → `bg-coral/text-coral/border-coral` 사용. shadcn 시맨틱 토큰은 `@theme inline`로 브릿지(`--color-primary: var(--color-coral)`).
+2. **shadcn 컴포넌트를 제자리에서 리스타일.** 복사돼 들어온 `components/ui/*.tsx`의 `cva`에 브랜드 변형(예: `variant: "sticker"`)을 **직접 추가**. 컴포넌트 레이어는 **하나**. Button/Card/Dialog/Form류를 "피하고 자체 구현"하지 않는다(→ `--ring` 포커스·a11y 손실).
+3. **wrapper는 *동작/구성* 추가할 때만.** 단순 재색칠·룩 변경에 wrapper를 만들지 않는다(shadcn 철학="소유한 코드를 직접 수정").
+4. **재사용 룩(3D 스티커 효과)은 `@layer components` 또는 `@utility`로.** 떠다니는 전역 클래스 금지(cascade·`cn()` 충돌). `cn()`은 `extendTailwindMerge`로 커스텀 클래스군 등록.
+5. **위생 3종 필수.** `.dark` 토큰 오버라이드 포함 / 모든 인터랙티브 요소에 `:focus-visible` 링(`--ring`) 도달 / tailwind-merge 인식.
+6. **shadcn에 없는 것만 자체 구현.** 풀 배너·파도 SVG·버블 등은 어차피 shadcn 컴포넌트가 아니므로 그대로 커스텀(이건 정상).
+7. **공통**: 사용자 입력은 React가 기본 이스케이프(별도 `escapeHtml` 불필요). IME 조합 중 Enter는 `e.nativeEvent.isComposing`로 무시.
+
+---
+
 ## Task 1: Next 앱 스캐폴드 + 의존성 + gitignore
 
 **Files:**
@@ -717,30 +731,88 @@ git commit -m "feat(next): useSession (localStorage+메모리 폴백)"
 
 ---
 
-## Task 10: 루트 레이아웃 + 브랜드 스타일 포팅 + Toaster
+## Task 10: 루트 레이아웃 + 브랜드 토큰/스타일 (시니어 표준) + Toaster
 
 **Files:**
 - Create/Modify: `zerobell-swim-nextjs/app/globals.css`
+- Modify: `zerobell-swim-nextjs/lib/utils.ts` (extendTailwindMerge)
 - Modify: `zerobell-swim-nextjs/app/layout.tsx`
 
-- [ ] **Step 1: global.css 포팅**
+> UI 코딩 규칙 1·4·5 적용: `@theme`로 토큰 등록, `@layer components`로 스티커 룩, `.dark` 오버라이드.
 
-기존 `src/styles/global.css`의 **`:root` 변수부터 끝까지 전체를** `zerobell-swim-nextjs/app/globals.css`로 복사하되, 맨 위 `@import "tailwindcss";`는 create-next-app이 넣은 v4 임포트 형식과 합칠 것(중복 import 금지). shadcn이 추가한 `@theme`/`:root` 토큰 블록은 유지하고, 그 아래에 브랜드 `:root{ --ocean… }`와 `.sticker/.tag/.btn-3d/.field/.pool-bg/.marker` 등 전부 이어붙임.
+- [ ] **Step 1: 브랜드 색을 `@theme`에 등록 (진짜 유틸 생성)**
 
-- [ ] **Step 2: shadcn 토큰을 브랜드에 매핑**
-
-`globals.css`의 shadcn 토큰 블록에서 핵심 매핑(무채색 디폴트 → 브랜드):
+`app/globals.css` 상단(create-next-app의 `@import "tailwindcss";` 아래, shadcn `@theme inline` 블록과 함께). 기존 `src/styles/global.css`의 hex 값을 `--color-*` 네임스페이스로 옮긴다:
 ```css
-:root {
-  --primary: #ff5d73;            /* coral */
-  --primary-foreground: #ffffff;
-  --ring: #48cae4;               /* aqua */
-  --radius: 1rem;                /* 스티커 라운드 느낌 */
+@import "tailwindcss";
+@import "tw-animate-css"; /* shadcn init이 넣었으면 유지 */
+
+@theme {
+  --color-ocean: #0077b6;
+  --color-pool:  #0096c7;
+  --color-aqua:  #48cae4;
+  --color-sky:   #90e0ef;
+  --color-foam:  #caf0f8;
+  --color-sun:   #ffd60a;
+  --color-mango: #ff9e00;
+  --color-coral: #ff5d73;
+  --color-pink:  #ff7eb6;
+  --color-cream: #fffaf0;
+  --color-ink:   #063047;
 }
 ```
-(나머지 shadcn 토큰은 기본 유지. Dialog/Sonner가 이 토큰을 쓰게 됨.)
+→ 이제 `bg-coral`, `text-ink`, `border-aqua`, `bg-foam` 등 유틸이 생성됨. **UI 태스크 전반에서 `bg-[var(--coral)]` 대신 `bg-coral`을 쓴다.**
 
-- [ ] **Step 3: layout.tsx — Pretendard + max-w-460 래퍼 + Providers + Toaster**
+- [ ] **Step 2: shadcn 시맨틱 토큰을 브랜드에 매핑 (`@theme inline` 브릿지 + `.dark`)**
+
+shadcn이 생성한 `:root`/`.dark` 토큰 블록을 브랜드로 매핑. 토큰 정의(런타임 모드별 값)는 `:root`/`.dark`에, 유틸 브릿지는 `@theme inline`에:
+```css
+:root {
+  --radius: 1rem;                 /* 스티커 라운드 */
+  --primary: var(--color-coral);
+  --primary-foreground: #ffffff;
+  --ring: var(--color-aqua);
+  --background: var(--color-cream);
+  --foreground: var(--color-ink);
+  /* 나머지 shadcn 토큰(secondary/muted/border/input…)은 기본 유지 */
+}
+.dark {
+  /* 본 비교앱은 라이트 전용 — 다크 미사용이면 :root 값과 동일하게 둬 회귀 방지 */
+  --background: var(--color-cream);
+  --foreground: var(--color-ink);
+}
+/* (shadcn init이 만든 @theme inline 블록 유지: --color-primary: var(--primary) 등) */
+```
+Dialog/Sonner/Form/Button이 이 토큰을 읽어 자동으로 on-brand. (런타임 모드 전환값만 `:root`/`.dark`, 색 자체는 Step 1의 `@theme`.)
+
+- [ ] **Step 3: 스티커 룩을 `@layer components`로 (전역 떠다니는 클래스 금지)**
+
+기존 `global.css`의 `.sticker/.tag/.btn-3d/.field/.marker`와 애니메이션(`.pool-bg/.caustics/.bubble/.spin/.pop` 등)을 `app/globals.css`로 옮기되, **컴포넌트 클래스는 `@layer components`로 감싸** 유틸로 override 가능하게(미레이어 시 cascade·tailwind-merge 충돌). hex는 Step 1 토큰 변수로 치환:
+```css
+@layer components {
+  .sticker { border: 3px solid var(--color-ink); box-shadow: 5px 6px 0 var(--color-ink); border-radius: 26px; background: #fff; }
+  .field   { border: 2.5px solid var(--color-ink); border-radius: 16px; background: #fff; padding: 12px 14px; width: 100%; font-size: 16px; outline: none; }
+  .field:focus { box-shadow: 3px 3px 0 var(--color-aqua); }
+  /* .tag / .marker 동일 패턴 */
+}
+```
+순수 장식 애니메이션(`.pool-bg/.caustics/.bubble/@keyframes …`)과 `[hidden]`, `::view-transition-*`는 레이어 없이 그대로 복사 가능(유틸과 경쟁 안 함).
+
+- [ ] **Step 4: `cn()`에 extendTailwindMerge (커스텀 클래스군 인식)**
+
+`lib/utils.ts` 교체 — `.sticker` 등이 유틸과 충돌 시 올바로 병합되도록:
+```ts
+import { clsx, type ClassValue } from 'clsx';
+import { extendTailwindMerge } from 'tailwind-merge';
+
+const twMerge = extendTailwindMerge({
+  extend: { classGroups: { /* 필요 시 커스텀 그룹 등록. 현재는 기본 + @theme 색으로 충분 */ } },
+});
+export function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }
+```
+(브랜드 색을 `@theme`로 등록했으므로 `bg-coral` 류는 tailwind-merge가 이미 인식. 별도 클래스군은 실제 충돌이 보일 때만 추가.)
+
+- [ ] **Step 5: layout.tsx — Pretendard + max-w-460 래퍼 + Providers + Toaster**
 
 Replace `app/layout.tsx`:
 ```tsx
@@ -766,7 +838,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="antialiased">
-        <div className="relative mx-auto w-full max-w-[460px] min-h-[100dvh] overflow-hidden" style={{ background: 'var(--cream)' }}>
+        <div className="relative mx-auto w-full max-w-[460px] min-h-[100dvh] overflow-hidden bg-cream">
           <Providers>{children}</Providers>
         </div>
         <Toaster position="top-center" />
@@ -776,24 +848,38 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-- [ ] **Step 4: 확인 + 커밋**
+- [ ] **Step 6: 확인 + 커밋**
 
-Run: `npm run dev` → 루트 접속, 콘솔 에러 없음 + 배경 크림색·Pretendard 적용.
+Run: `npm run dev` → 루트 접속, 콘솔 에러 없음 + 배경 크림색·Pretendard 적용. `bg-coral` 등 유틸이 실제 동작하는지 임시 요소로 확인.
 ```bash
-git add zerobell-swim-nextjs/app/globals.css zerobell-swim-nextjs/app/layout.tsx
-git commit -m "feat(next): 브랜드 스타일 포팅 + 레이아웃/Toaster/Providers"
+git add zerobell-swim-nextjs/app/globals.css zerobell-swim-nextjs/lib/utils.ts zerobell-swim-nextjs/app/layout.tsx
+git commit -m "feat(next): @theme 브랜드 토큰 + @layer 스티커룩 + extendTailwindMerge + 레이아웃"
 ```
 
 ---
 
-## Task 11: 공유 UI — ConfirmDialog (shadcn Dialog) + toast 래퍼
+## Task 11: 브랜드 버튼 변형(제자리 리스타일) + ConfirmDialog
 
 **Files:**
+- Modify: `zerobell-swim-nextjs/components/ui/button.tsx` (owned source에 `sticker` 변형 추가)
 - Create: `zerobell-swim-nextjs/components/room/ConfirmDialog.tsx`
 
-기존 `room.ts`의 `askConfirm(html, onYes)` 패턴(전역 단일 모달)을 React 상태로 대체. shadcn `Dialog` 사용(접근성 내장).
+> UI 코딩 규칙 2·3 적용: 버튼 브랜드 룩은 **owned `button.tsx`의 cva에 변형 추가**(wrapper·`bg-[var(--coral)]` 금지). ConfirmDialog는 *동작(Promise형 확인 컨텍스트)* 추가라 컴포넌트화 정당.
 
-- [ ] **Step 1: 컨펌 다이얼로그 컴포넌트(컨텍스트 훅)**
+- [ ] **Step 1: button.tsx에 `sticker` 변형 추가 (제자리 리스타일)**
+
+`components/ui/button.tsx`의 `buttonVariants = cva(…)` 안 `variant` 맵에 한 줄 추가(기존 `.btn-3d` 룩을 토큰/유틸로 재현):
+```ts
+// variants.variant 에 추가:
+sticker:
+  "border-[3px] border-ink bg-coral text-white rounded-2xl font-round " +
+  "shadow-[4px_5px_0_var(--color-ink)] transition-all " +
+  "active:translate-y-0.5 active:shadow-[2px_2px_0_var(--color-ink)] " +
+  "disabled:opacity-45 focus-visible:ring-2 focus-visible:ring-aqua",
+```
+→ 이제 `<Button variant="sticker">`로 브랜드 버튼 사용. `--ring` 포커스도 유지(`focus-visible:ring-aqua`). (Card도 스티커 룩이 필요하면 동일하게 `card.tsx`에 변형/클래스 추가하거나 `.sticker` 유틸 사용.)
+
+- [ ] **Step 2: ConfirmDialog (Promise형 확인 컨텍스트 — 동작 추가라 컴포넌트화 OK)**
 
 Create `components/room/ConfirmDialog.tsx`:
 ```tsx
@@ -801,6 +887,7 @@ Create `components/room/ConfirmDialog.tsx`:
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 type ConfirmFn = (message: ReactNode, onYes: () => void) => void;
 const Ctx = createContext<ConfirmFn>(() => {});
@@ -817,12 +904,13 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     <Ctx.Provider value={confirm}>
       {children}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sticker max-w-[360px]">
+        {/* Dialog는 1회 사용 — 스티커 룩은 .sticker 유틸 1개로(call-site 1곳이라 OK) */}
+        <DialogContent className={cn('sticker max-w-[360px]')}>
           <DialogHeader><DialogTitle className="font-display text-xl">확인</DialogTitle></DialogHeader>
-          <div className="font-round text-[16px]">{msg}</div>
+          <div className="font-round text-base">{msg}</div>
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setOpen(false)} className="font-round">취소</Button>
-            <Button onClick={() => { setOpen(false); cb.fn(); }} className="font-round bg-[var(--coral)] text-white">네</Button>
+            <Button variant="sticker" onClick={() => { setOpen(false); cb.fn(); }}>네</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -831,17 +919,17 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 }
 ```
 
-- [ ] **Step 2: Providers에 ConfirmProvider 합성**
+- [ ] **Step 3: Providers에 ConfirmProvider 합성**
 
 `app/providers.tsx`의 `QueryClientProvider` 안쪽을 `<ConfirmProvider>{children}</ConfirmProvider>`로 감싼다(import 추가).
 
-- [ ] **Step 3: 타입체크 + 커밋**
+- [ ] **Step 4: 타입체크 + 커밋**
 
 Run: `npx tsc --noEmit`
 Expected: 에러 없음.
 ```bash
-git add zerobell-swim-nextjs/components/room/ConfirmDialog.tsx zerobell-swim-nextjs/app/providers.tsx
-git commit -m "feat(next): ConfirmDialog(shadcn Dialog) + Provider 합성"
+git add zerobell-swim-nextjs/components/ui/button.tsx zerobell-swim-nextjs/components/room/ConfirmDialog.tsx zerobell-swim-nextjs/app/providers.tsx
+git commit -m "feat(next): button sticker 변형(제자리 리스타일) + ConfirmDialog"
 ```
 
 ---
@@ -986,9 +1074,10 @@ function pick(rideId: number) {
   });
 }
 
-// 렌더 (escapeHtml 불필요 — React가 기본 이스케이프)
+// 렌더 (escapeHtml 불필요 — React가 기본 이스케이프).
+// 색은 @theme 유틸(bg-coral/bg-ink/ring-aqua) 사용 — arbitrary 값 금지(UI 규칙 1).
 {rides.length === 0 ? (
-  <div className="sticker p-6 text-center font-round text-[17px] text-[var(--ink)]/60">
+  <div className="sticker p-6 text-center font-round text-[17px] text-ink/60">
     아직 등록된 카풀이 없어요 🥲<br />운전자분의 등록을 기다려요!
   </div>
 ) : rides.map((ride) => {
@@ -997,21 +1086,22 @@ function pick(rideId: number) {
   const mine = myBooking?.rideId === ride.id;
   const riders = bookings.filter((b) => b.rideId === ride.id).map((b) => b.rider);
   return (
-    <div key={ride.id} className={`sticker p-5 ${mine ? 'ring-4 ring-[var(--aqua)]' : ''}`}>
+    <div key={ride.id} className={cn('sticker p-5', mine && 'ring-4 ring-aqua')}>
       {/* ...DriverName/from/left/riders chips — RideList.astro+renderRideList 마크업 그대로... */}
-      <button
+      {/* 3D 룩은 button.tsx의 sticker 변형 재사용 + 상태별 색만 유틸로 override */}
+      <Button
+        variant="sticker"
         onClick={() => pick(ride.id)}
         disabled={full && !mine}
-        className={`btn-3d w-full rounded-[16px] py-4 font-round text-xl ${
-          mine ? 'bg-[var(--ink)] text-white' : full ? 'bg-white' : 'bg-[var(--coral)] text-white'
-        }`}
+        className={cn('w-full py-4 text-xl', mine ? 'bg-ink' : full && 'bg-white text-ink')}
       >
         {mine ? '✅ 선택됨 (취소)' : full ? '🈵 자리 다 참' : '이거 탈래요'}
-      </button>
+      </Button>
     </div>
   );
 })}
 ```
+> 색 override(`bg-ink`/`bg-white`)는 `@theme`에 등록된 유틸이라 `cn()`의 tailwind-merge가 `sticker` 변형의 `bg-coral`을 올바로 대체. arbitrary `bg-[var(--coral)]`·전역 `.btn-3d`는 쓰지 않는다.
 운전자 폼: 좌석 +/- (1..MAX_SEATS 클램프), 출발지 입력, 등록=`submitDriverAction`/취소=`cancelDriverAction`(취소는 `useConfirm`로 확인). 내 ride 존재 시 `renderDriver`처럼 "기존 등록" 표시.
 
 토스트 메시지는 기존 `room.ts` 문자열 그대로 사용(`🎉 카풀 등록 완료!` 등).
