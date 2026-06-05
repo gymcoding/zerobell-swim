@@ -134,6 +134,16 @@ body{
 
 [hidden]{ display:none !important; }
 
+/* ===== 페이지 전환(View Transitions) 깜빡임 제거 =====
+ * ClientRouter의 SPA 이동/캐시 유지는 그대로 두고, 루트 크로스페이드
+ * 애니메이션만 끈다. (카카오톡 인앱 브라우저 등 VT 지원 웹뷰에서
+ * 앞으로 이동 시 고정 헤더가 페이드되며 깜빡이던 현상 방지 — 즉시 교체) */
+::view-transition-old(root),
+::view-transition-new(root){
+  animation: none !important;
+  mix-blend-mode: normal;
+}
+
 @media (prefers-reduced-motion: reduce){
   *{ animation:none !important; scroll-behavior:auto; }
   .reveal{ opacity:1; }
