@@ -57,17 +57,26 @@ zerobell-swim-nextjs/
 
 ---
 
-## UI 코딩 규칙 (시니어 표준 — 공식문서·실무 4팀 검증 반영)
+## UI 코딩 규칙 (출처 분류 — 공식문서 3팀 재검증)
 
-모든 UI 태스크(10~16)는 아래를 따른다. "동작은 shadcn, 정체성은 브랜드"를 **제자리 리스타일**로 구현한다(wrapper·별도 primitive 레이어 금지).
+각 규칙에 **출처 라벨**을 붙였다(`[shadcn공식]`/`[Tailwind공식]`/`[React/플랫폼]`/`[관례]`). "관례"는 우리 하우스룰이지 외부 표준 아님 — 강제 아님.
 
-1. **브랜드 색은 `@theme`에 등록 → 진짜 유틸 생성.** `:root` + `bg-[var(--coral)]` arbitrary 값 **금지**(주니어 형태·tailwind-merge 미인식·자동완성 없음). `@theme { --color-coral: #ff5d73; … }` → `bg-coral/text-coral/border-coral` 사용. shadcn 시맨틱 토큰은 `@theme inline`로 브릿지(`--color-primary: var(--color-coral)`).
-2. **shadcn 컴포넌트를 제자리에서 리스타일.** 복사돼 들어온 `components/ui/*.tsx`의 `cva`에 브랜드 변형(예: `variant: "sticker"`)을 **직접 추가**. 컴포넌트 레이어는 **하나**. Button/Card/Dialog/Form류를 "피하고 자체 구현"하지 않는다(→ `--ring` 포커스·a11y 손실).
-3. **wrapper는 *동작/구성* 추가할 때만.** 단순 재색칠·룩 변경에 wrapper를 만들지 않는다(shadcn 철학="소유한 코드를 직접 수정").
-4. **재사용 룩(3D 스티커 효과)은 `@layer components` 또는 `@utility`로.** 떠다니는 전역 클래스 금지(cascade·`cn()` 충돌). `cn()`은 `extendTailwindMerge`로 커스텀 클래스군 등록.
-5. **위생 3종 필수.** `.dark` 토큰 오버라이드 포함 / 모든 인터랙티브 요소에 `:focus-visible` 링(`--ring`) 도달 / tailwind-merge 인식.
-6. **shadcn에 없는 것만 자체 구현.** 풀 배너·파도 SVG·버블 등은 어차피 shadcn 컴포넌트가 아니므로 그대로 커스텀(이건 정상).
-7. **공통**: 사용자 입력은 React가 기본 이스케이프(별도 `escapeHtml` 불필요). IME 조합 중 Enter는 `e.nativeEvent.isComposing`로 무시.
+1. **`[Tailwind/shadcn공식]` 두 종류의 토큰을 구분해 둔다 — 둘 다 `bg-coral`/`bg-primary` 유틸을 만든다.**
+   - **브랜드 팔레트(라이트/다크 동일, mode-invariant)** → `@theme { --color-coral: #ff5d73 … }` 직접 등록(Tailwind 공식·가장 단순) → `bg-coral/text-ink/border-aqua`.
+   - **shadcn 시맨틱 토큰(`--primary`/`--background` 등, 모드별 달라질 수 있음)** → shadcn "Adding New Tokens" 레시피대로 `:root`/`.dark`에 값 + `@theme inline { --color-primary: var(--primary) }`로 브릿지. (※ 이전 초안의 "색을 무조건 `@theme`에, `:root` 금지"는 shadcn 시맨틱 토큰 관례와 어긋나 교정.)
+   - `[Tailwind 선호]` arbitrary `bg-[var(--coral)]`보다 등록된 `bg-coral` 유틸을 **선호**(금지는 아님 — arbitrary도 공식 지원 경로).
+2. **`[shadcn공식]` 색/브랜드 리스타일은 토큰 우선, 새 *구조/형태* 변형만 `cva`로.**
+   - shadcn 1순위 커스터마이즈 경로 = **CSS 변수 테마**("We use and recommend CSS variables for theming"). 색은 토큰으로.
+   - 진짜 새로운 변형(예: `sticker` 형태)은 owned `components/ui/*.tsx`의 `cva`에 직접 추가(=Open Code "you own the code"). Button/Card/Dialog/Form을 통째로 피해 자체 구현하지 말 것(→ `--ring`·a11y 손실).
+3. **`[관례]` 커스터마이즈 우선순위 = 토큰 → cva 변형 → wrapper.**
+   - shadcn 공식이 "wrapper 금지"라고 한 적 **없음**(이전 라운드 제 단언은 과장). 오히려 커뮤니티 1위 가이드(Discussion #9754)는 *업데이트 머지 충돌 회피* 위해 일회성엔 **wrapper도 권장**. → 색은 토큰, 새 변형은 cva, 동작/구성·일회성 합성은 wrapper. **셋 다 정당, 케이스로 선택.**
+4. **`[Tailwind공식]` 재사용 룩은 `@layer components`(다속성·유틸 override 가능) / `@utility`(변형 지원 단일 유틸) — 둘은 용도가 다름.** 떠다니는 미레이어 전역 클래스 금지.
+   - **`cn()`은 shadcn 기본형(`twMerge(clsx())`) 그대로.** `extendTailwindMerge`는 **불필요**(shadcn 비공식·메인테이너 미채택). `@theme`로 등록된 `bg-coral`은 표준 `bg-*` 군이라 기본 tailwind-merge가 이미 올바로 병합. 진짜 커스텀 *클래스군 충돌*(예: 커스텀 `text-*` 스케일 vs 색)이 보일 때만 도입.
+5. **`[shadcn/플랫폼공식]` 위생: `.dark` 토큰 오버라이드 / `:focus-visible` 링(`--ring`) / tailwind-merge.** `--ring`·`focus-visible:ring-*`은 shadcn 컴포넌트 기본 탑재 — `cva` 변형에도 유지. `[관례]` "모든 인터랙티브 요소에 링 도달"은 우리 a11y 정책.
+6. **`[관례]` shadcn에 없는 것만 자체 구현.** 풀 배너·파도 SVG·버블 등(정상).
+7. **`[React/플랫폼공식]` 공통.**
+   - React는 **텍스트 콘텐츠**를 기본 이스케이프(별도 `escapeHtml` 불필요). 단 전면 XSS 보장 아님 — 속성/URL·`dangerouslySetInnerHTML`은 예외(이 앱은 둘 다 안 씀).
+   - IME 조합 중 Enter 무시: `e.nativeEvent.isComposing` **또는** `keyCode === 229`(Safari는 조합확정 Enter에 `isComposing=false` → 229 체크 병행). 기존 Astro `enterKey`와 동일.
 
 ---
 
@@ -776,10 +785,9 @@ git commit -m "feat(next): useSession (localStorage+메모리 폴백)"
 
 **Files:**
 - Create/Modify: `zerobell-swim-nextjs/app/globals.css`
-- Modify: `zerobell-swim-nextjs/lib/utils.ts` (extendTailwindMerge)
 - Modify: `zerobell-swim-nextjs/app/layout.tsx`
 
-> UI 코딩 규칙 1·4·5 적용: `@theme`로 토큰 등록, `@layer components`로 스티커 룩, `.dark` 오버라이드.
+> UI 코딩 규칙 1·4·5 적용: 브랜드 팔레트는 `@theme`, shadcn 시맨틱 토큰은 `:root`+`@theme inline`, 스티커 룩은 `@layer components`, `.dark` 오버라이드. `cn()`은 shadcn 기본형 유지.
 
 - [ ] **Step 1: 브랜드 색을 `@theme`에 등록 (진짜 유틸 생성)**
 
@@ -839,19 +847,16 @@ Dialog/Sonner/Form/Button이 이 토큰을 읽어 자동으로 on-brand. (런타
 ```
 순수 장식 애니메이션(`.pool-bg/.caustics/.bubble/@keyframes …`)과 `[hidden]`, `::view-transition-*`는 레이어 없이 그대로 복사 가능(유틸과 경쟁 안 함).
 
-- [ ] **Step 4: `cn()`에 extendTailwindMerge (커스텀 클래스군 인식)**
+- [ ] **Step 4: `cn()`은 shadcn 기본형 유지 (extendTailwindMerge 불필요)**
 
-`lib/utils.ts` 교체 — `.sticker` 등이 유틸과 충돌 시 올바로 병합되도록:
+shadcn init이 생성한 `lib/utils.ts`를 **그대로 둔다**:
 ```ts
 import { clsx, type ClassValue } from 'clsx';
-import { extendTailwindMerge } from 'tailwind-merge';
-
-const twMerge = extendTailwindMerge({
-  extend: { classGroups: { /* 필요 시 커스텀 그룹 등록. 현재는 기본 + @theme 색으로 충분 */ } },
-});
+import { twMerge } from 'tailwind-merge';
 export function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }
 ```
-(브랜드 색을 `@theme`로 등록했으므로 `bg-coral` 류는 tailwind-merge가 이미 인식. 별도 클래스군은 실제 충돌이 보일 때만 추가.)
+- 브랜드 색을 `@theme`로 등록했으므로 `bg-coral`은 표준 `bg-*` 군 → 기본 tailwind-merge가 이미 올바로 병합. **`extendTailwindMerge`는 도입하지 않는다**(shadcn 비공식·메인테이너 미채택, 우리 경우 불필요).
+- `.sticker` 같은 커스텀 *컴포넌트 클래스*는 유틸이 아니라 `@layer components`에 있으므로 tailwind-merge의 충돌 대상이 아님(유틸로 override 가능). 진짜 커스텀 *유틸 클래스군 충돌*이 실제로 보일 때만(예: 커스텀 `text-*` 스케일) 그때 `extendTailwindMerge` 검토.
 
 - [ ] **Step 5: layout.tsx — Pretendard + max-w-460 래퍼 + Providers + Toaster**
 
@@ -893,8 +898,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 Run: `npm run dev` → 루트 접속, 콘솔 에러 없음 + 배경 크림색·Pretendard 적용. `bg-coral` 등 유틸이 실제 동작하는지 임시 요소로 확인.
 ```bash
-git add zerobell-swim-nextjs/app/globals.css zerobell-swim-nextjs/lib/utils.ts zerobell-swim-nextjs/app/layout.tsx
-git commit -m "feat(next): @theme 브랜드 토큰 + @layer 스티커룩 + extendTailwindMerge + 레이아웃"
+git add zerobell-swim-nextjs/app/globals.css zerobell-swim-nextjs/app/layout.tsx
+git commit -m "feat(next): @theme 브랜드 토큰 + :root/@theme inline 시맨틱 + @layer 스티커룩 + 레이아웃"
 ```
 
 ---
@@ -1300,6 +1305,6 @@ git commit -m "docs(next): 통합 검증 + Astro vs Next 비교 메모"
 - **cacheComponents**: create-next-app 기본 비활성 전제(Task 1). 활성화 시 spec대로 `<Suspense>` 필요 — 본 계획은 비활성 기준.
 - **타입 일관성**: `DB_KEY`(`['db']`), reducer 시그니처 `(db, actor, payload)`, 액션명 `*Action`, `useRoomMutation({reduce, run})` 계약이 Task 8/12/14/15/16에서 일치.
 - **Server Action을 read에 미사용**: 초기 RSC=`getDB`(React.cache), 클라 폴링=`/api/db` Route Handler, 쓰기만 Server Action — 공식 문서 검증 반영.
-- **UI 시니어 표준(4팀 검증)**: `@theme` 토큰·`@theme inline` 브릿지·`@layer components`·`.dark`·`extendTailwindMerge`(Task 10), shadcn 제자리 리스타일=`button.tsx` `sticker` cva 변형(Task 11), arbitrary `bg-[var()]`→유틸(Task 14) — "UI 코딩 규칙" 섹션으로 전 UI 태스크 지배.
+- **UI 규칙(공식문서 3팀 재검증·출처 분류)**: 브랜드 팔레트=`@theme` / shadcn 시맨틱 토큰=`:root`+`@theme inline` / 스티커룩=`@layer components` / `cn()`=shadcn 기본형(**extendTailwindMerge 제거** — 불필요) (Task 10), 색/브랜드는 토큰 우선·새 구조 변형만 `cva`·일회성/동작은 wrapper도 허용(Task 11), arbitrary→유틸 선호(Task 14), IME는 `isComposing||keyCode===229`. 각 규칙에 `[shadcn공식]/[Tailwind공식]/[React]/[관례]` 라벨로 과장 방지.
 - **AI-agents 공식 가이드 준수**: `AGENTS.md`(번들 docs 우선)·`CLAUDE.md(@AGENTS.md)`·`.mcp.json(next-devtools)`(Task 1 Step 7), 검증 루프=dev+`get_errors`(Task 17 Step 2.5). Next `>=16.2` 전제(번들 docs)·`>=16`(MCP).
 - **알려진 잔여 리스크**: 7초 interval 틱 vs 낙관적 경합은 `onSettled` invalidate로 정합(완전 차단 아님, 기존 Astro와 동일 수준). jsonbin last-write-wins 동시성 한계는 범위 외(spec 9). Next 버전이 16 미만이면 번들 docs/MCP 대신 `@next/codemod agents-md`(`.next-docs/`) 폴백 — Task 1 Step 7에서 분기.
