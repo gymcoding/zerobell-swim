@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { ClipboardList, LogOut } from 'lucide-react';
 import { useSession } from '@/hooks/use-session';
 import { Button } from '@/components/ui/button';
 
@@ -132,14 +133,14 @@ export function HomeScreen() {
           href="/status"
           className="tag bg-white px-4 py-2.5 min-h-[44px] font-round text-[16px] active:translate-y-0.5 transition flex items-center gap-1.5"
         >
-          📋 카풀 현황
+          <ClipboardList className="w-5 h-5" /> 카풀 현황
         </Link>
         <button
           type="button"
           className="tag bg-white px-4 py-2.5 min-h-[44px] font-round text-[16px] active:translate-y-0.5 transition flex items-center gap-1.5"
           onClick={logout}
         >
-          🚪 로그아웃
+          <LogOut className="w-5 h-5" /> 로그아웃
         </button>
       </div>
     </section>
