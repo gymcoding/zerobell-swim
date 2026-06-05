@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🚗 카풀 매칭 · 통일로 원정수영 (6/19 금)</title>
+
+<!-- OG / 단톡방 공유 미리보기 -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="🚗 통일로 원정수영 카풀 매칭">
+<meta property="og:description" content="운전자로 등록하거나 빈자리 골라 타기! 다 같이 영종 → 통일워터파크 🌊">
+<meta property="og:locale" content="ko_KR">
+<meta name="theme-color" content="#0096c7">
+
+<!-- Tailwind CSS v4 (browser CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gaegu:wght@700&family=Jua&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+
+<style>
+  :root{
+    --ocean:#0077b6;
+    --pool:#0096c7;
+    --aqua:#48cae4;
+    --sky:#90e0ef;
+    --foam:#caf0f8;
+    --sun:#ffd60a;
+    --mango:#ff9e00;
+    --coral:#ff5d73;
+    --pink:#ff7eb6;
+    --cream:#fffaf0;
+    --ink:#063047;
+  }
+  *{ -webkit-tap-highlight-color: transparent; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family:'Pretendard','Pretendard Variable',system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--cream);
+    overflow-x:hidden;
+    -webkit-text-size-adjust:100%;
+  }
+  .font-display{ font-family:'Black Han Sans',sans-serif; }
+  .font-hand{ font-family:'Gaegu',cursive; }
+  .font-round{ font-family:'Jua',sans-serif; }
+
+  .pool-bg{
+    background:
+      radial-gradient(120% 80% at 80% -10%, rgba(255,214,10,.55), transparent 55%),
+      radial-gradient(120% 90% at 0% 10%, rgba(255,93,115,.40), transparent 50%),
+      linear-gradient(160deg,#48cae4 0%,#0096c7 45%,#0077b6 100%);
+  }
+
+  .sticker{
+    border:3px solid var(--ink);
+    box-shadow:5px 6px 0 var(--ink);
+    border-radius:26px;
+    background:#fff;
+  }
+  .tag{
+    border:2.5px solid var(--ink);
+    box-shadow:3px 3px 0 var(--ink);
+    border-radius:9999px;
+  }
+  .marker{ background:linear-gradient(transparent 58%, var(--sun) 58% 92%, transparent 92%); }
+
+  .btn-3d{
+    border:3px solid var(--ink);
+    box-shadow:4px 5px 0 var(--ink);
+    transition:all .12s;
+  }
+  .btn-3d:active{ transform:translateY(2px); box-shadow:2px 2px 0 var(--ink); }
+  .btn-3d:disabled{ opacity:.45; box-shadow:2px 2px 0 var(--ink); cursor:not-allowed; }
+
+  .field{
+    border:2.5px solid var(--ink);
+    border-radius:16px;
+    background:#fff;
+    padding:12px 14px;
+    width:100%;
+    font-size:16px; /* iOS 줌 방지 */
+    outline:none;
+  }
+  .field:focus{ box-shadow:3px 3px 0 var(--aqua); }
+
+  @keyframes pop{ 0%{ transform:translateY(14px) scale(.98); opacity:0; } 100%{ transform:none; opacity:1; } }
+  .pop{ animation:pop .35s cubic-bezier(.2,.9,.25,1) both; }
+
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .spin{ animation:spin .8s linear infinite; }
+
+  .safe-bottom{ padding-bottom:calc(14px + env(safe-area-inset-bottom)); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; scroll-behavior:auto; }
+  }
+
+  [hidden]{ display:none !important; }
+</style>
+</head>
+
+<body class="antialiased">
+
+<div class="relative mx-auto w-full max-w-[460px] min-h-screen" style="background:var(--cream)">
+
+  <!-- ============ HERO ============ -->
+  <header class="pool-bg relative overflow-hidden text-white pt-9 pb-16 px-5">
+    <div class="relative z-10 text-center">
+      <a href="index.html" class="tag inline-flex items-center gap-1 bg-white/95 text-[var(--ocean)] px-3 py-1 text-xs font-extrabold active:translate-y-0.5 transition">
+        ← 행사 안내로
+      </a>
+      <h1 class="font-display leading-[0.95] mt-4 drop-shadow-[3px_4px_0_rgba(6,48,71,.35)]">
+        <span class="block text-[clamp(38px,12vw,56px)] text-[var(--sun)]">🚗 카풀 매칭</span>
+      </h1>
+      <p class="font-round text-base mt-3 text-white/95">
+        영종 → 통일워터파크 · 6/19(금)<br>운전자로 등록하거나 빈자리 골라 타요!
+      </p>
+    </div>
+    <svg class="absolute -bottom-1 left-0 w-full" viewBox="0 0 460 40" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,20 C90,40 150,3 230,16 C320,32 380,5 460,18 L460,40 L0,40 Z" fill="var(--cream)"/>
+    </svg>
+  </header>
+
+  <main class="px-5 pb-24 -mt-1">
+
+    <!-- ============ 이름 입력 (공통) ============ -->
+    <section class="mt-5">
+      <label class="font-round text-[15px] flex items-center gap-1.5 ml-1 mb-1.5">
+        <span class="text-xl">🙋</span> 내 이름
+      </label>
+      <input id="myName" class="field font-round" type="text" inputmode="text"
+             autocomplete="off" maxlength="12" placeholder="단톡방에서 쓰는 이름으로!">
+      <p id="nameWarn" class="font-round text-[13px] text-[var(--coral)] mt-1.5 ml-1" hidden></p>
+    </section>
+
+    <!-- ============ 역할 선택 ============ -->
+    <section class="mt-6 grid grid-cols-2 gap-3">
+      <button id="roleDriver" type="button"
+              class="btn-3d rounded-[22px] bg-[var(--sun)] py-4 font-round text-[17px] flex flex-col items-center gap-1">
+        <span class="text-3xl">🧑‍✈️</span> 운전자로 등록
+      </button>
+      <button id="roleRider" type="button"
+              class="btn-3d rounded-[22px] bg-[var(--aqua)] text-white py-4 font-round text-[17px] flex flex-col items-center gap-1">
+        <span class="text-3xl">🙋‍♀️</span> 카풀 탈래요
+      </button>
+    </section>
+
+    <!-- ============ 운전자 폼 ============ -->
+    <section id="driverForm" class="mt-6 pop" hidden>
+      <div class="sticker p-5">
+        <h2 class="font-display text-2xl flex items-center gap-2"><span>🧑‍✈️</span><span class="marker">카풀 등록</span></h2>
+        <div class="mt-4 space-y-3">
+          <div>
+            <label class="font-round text-sm ml-1">🚪 가능 인원 (좌석 수)</label>
+            <div class="flex items-center gap-3 mt-1">
+              <button type="button" id="seatMinus" class="btn-3d rounded-full w-11 h-11 bg-white font-display text-2xl leading-none">−</button>
+              <input id="seatCount" class="field font-display text-2xl text-center" style="max-width:90px"
+                     type="number" inputmode="numeric" min="1" max="8" value="3">
+              <button type="button" id="seatPlus" class="btn-3d rounded-full w-11 h-11 bg-white font-display text-2xl leading-none">＋</button>
+              <span class="font-round text-sm text-[var(--pool)]">명</span>
+            </div>
+          </div>
+          <div>
+            <label class="font-round text-sm ml-1">📍 출발 장소</label>
+            <input id="driverFrom" class="field font-round mt-1" type="text" maxlength="30"
+                   placeholder="예) 하늘도시 홈플러스 앞">
+          </div>
+          <button id="submitDriver" type="button"
+                  class="btn-3d w-full rounded-[18px] bg-[var(--coral)] text-white py-3.5 font-round text-lg">
+            🚗 카풀 등록하기
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 탑승자 목록 ============ -->
+    <section id="riderSection" class="mt-6 pop" hidden>
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🚙</span>
+        <h2 class="font-display text-2xl"><span class="marker">탈 수 있는 카풀</span></h2>
+      </div>
+      <p class="font-round text-[13px] text-[var(--pool)] mt-1 ml-1">자리 남은 카풀을 골라 타세요! (한 개만 선택돼요)</p>
+      <div id="rideList" class="mt-3 space-y-3"></div>
+    </section>
+
+    <!-- ============ 현황 ============ -->
+    <section class="mt-8">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">📋</span>
+          <h2 class="font-display text-2xl"><span class="marker">실시간 현황</span></h2>
+        </div>
+        <button id="refreshBtn" type="button"
+                class="tag bg-white px-3 py-1.5 font-round text-sm active:translate-y-0.5 transition flex items-center gap-1">
+          <span id="refreshIcon">🔄</span> 새로고침
+        </button>
+      </div>
+      <p id="statusMeta" class="font-round text-[12px] text-[var(--ink)]/50 mt-1 ml-1">불러오는 중…</p>
+      <div id="statusList" class="mt-3 space-y-3"></div>
+    </section>
+
+  </main>
+
+  <!-- ============ 토스트 ============ -->
+  <div id="toast" class="fixed left-1/2 -translate-x-1/2 bottom-6 z-50 max-w-[420px] w-[90%] pop" hidden>
+    <div id="toastBox" class="sticker px-4 py-3 font-round text-[15px] text-center"></div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+ *  ⚙️  설정 (CONFIG) — 사용 전 아래 두 값을 채워주세요!
+ *
+ *  1) jsonbin.io 가입 → "Create Bin"으로 새 bin 생성
+ *  2) 초기 내용은 아래 EMPTY 구조로 넣기:  { "rides": [], "bookings": [] }
+ *  3) 생성된 Bin ID를 BIN_ID 에, 계정 Master Key를 MASTER_KEY 에 붙여넣기
+ *
+ *  ⚠️ 주의: Master Key가 클라이언트에 노출됩니다.
+ *     일회용·신뢰 그룹(단톡방) 한정으로만 사용하고,
+ *     행사 끝나면 jsonbin에서 bin을 삭제하세요.
+ * ============================================================ */
+const CONFIG = {
+  BIN_ID:     "여기에_BIN_ID_붙여넣기",     // 예: "665f0a1bacd3cb34a8XXXXXX"
+  MASTER_KEY: "여기에_MASTER_KEY_붙여넣기",  // 예: "$2a$10$XXXXXXXXXXXXXXXXXXXXXX"
+  POLL_MS:    7000,                         // 현황 자동 갱신 주기 (ms)
+  MAX_SEATS:  8                             // 1대당 최대 좌석
+};
+
+const API = `https://api.jsonbin.io/v3/b/${CONFIG.BIN_ID}`;
+const HEADERS = {
+  "Content-Type": "application/json",
+  "X-Master-Key": CONFIG.MASTER_KEY,
+  "X-Bin-Meta": "false"   // 응답에서 record만 받기
+};
+
+/* ---------- DOM ---------- */
+const $ = (id) => document.getElementById(id);
+const els = {
+  myName:    $("myName"),
+  nameWarn:  $("nameWarn"),
+  roleDriver:$("roleDriver"),
+  roleRider: $("roleRider"),
+  driverForm:$("driverForm"),
+  riderSection:$("riderSection"),
+  seatCount: $("seatCount"),
+  seatMinus: $("seatMinus"),
+  seatPlus:  $("seatPlus"),
+  driverFrom:$("driverFrom"),
+  submitDriver:$("submitDriver"),
+  rideList:  $("rideList"),
+  statusList:$("statusList"),
+  statusMeta:$("statusMeta"),
+  refreshBtn:$("refreshBtn"),
+  refreshIcon:$("refreshIcon"),
+  toast:     $("toast"),
+  toastBox:  $("toastBox"),
+};
+
+/* ---------- 상태 ---------- */
+let DATA = { rides: [], bookings: [] };   // 최근에 받은 서버 데이터 캐시
+let pollTimer = null;
+
+/* ---------- 유틸 ---------- */
+const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) =>
+  ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+const myName = () => els.myName.value.trim();
+
+function configReady(){
+  return CONFIG.BIN_ID && !CONFIG.BIN_ID.includes("붙여넣기")
+      && CONFIG.MASTER_KEY && !CONFIG.MASTER_KEY.includes("붙여넣기");
+}
+
+function toast(msg, kind="info"){
+  const colors = { info:"#fff", ok:"#e8fff1", err:"#fff0f2", warn:"#fff8e6" };
+  els.toastBox.style.background = colors[kind] || "#fff";
+  els.toastBox.innerHTML = msg;
+  els.toast.hidden = false;
+  els.toast.classList.remove("pop"); void els.toast.offsetWidth; els.toast.classList.add("pop");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>{ els.toast.hidden = true; }, 2600);
+}
+
+/* 남은 좌석 = seats − 해당 ride 예약 수 */
+function remaining(ride, bookings){
+  const taken = bookings.filter(b => b.rideId === ride.id).length;
+  return ride.seats - taken;
+}
+
+/* ---------- 네트워크 (GET-merge-PUT) ---------- */
+async function getData(){
+  const res = await fetch(API + "/latest", { headers: HEADERS });
+  if(!res.ok) throw new Error("GET " + res.status);
+  const json = await res.json();
+  // X-Bin-Meta:false → record 본문이 곧 응답
+  const rec = (json && json.record) ? json.record : json;
+  return {
+    rides:    Array.isArray(rec?.rides) ? rec.rides : [],
+    bookings: Array.isArray(rec?.bookings) ? rec.bookings : [],
+  };
+}
+
+async function putData(next){
+  const res = await fetch(API, {
+    method: "PUT",
+    headers: HEADERS,
+    body: JSON.stringify(next),
+  });
+  if(!res.ok) throw new Error("PUT " + res.status);
+  return next;
+}
+
+/**
+ * 쓰기 작업은 반드시 GET → merge → PUT 순서로.
+ * mutate(fresh) 는 최신 데이터를 받아 "내 항목만" 추가/수정한 새 객체를 반환.
+ * 반환값이 null 이면 쓰기를 건너뜀(예: 검증 실패).
+ */
+async function commit(mutate){
+  const fresh = await getData();
+  const next = mutate(structuredClone(fresh));
+  if(next === null) return fresh;        // 쓰기 취소
+  await putData(next);
+  return next;
+}
+
+/* ---------- 렌더 ---------- */
+function render(data){
+  DATA = data;
+  renderRideList(data);
+  renderStatus(data);
+}
+
+function renderRideList(data){
+  const me = myName();
+  if(data.rides.length === 0){
+    els.rideList.innerHTML = `<div class="sticker p-5 text-center font-round text-[15px] text-[var(--ink)]/60">아직 등록된 카풀이 없어요 🥲<br>운전자분의 등록을 기다려요!</div>`;
+    return;
+  }
+  const myBooking = data.bookings.find(b => b.rider === me);
+  els.rideList.innerHTML = data.rides.map(ride => {
+    const left = remaining(ride, data.bookings);
+    const full = left <= 0;
+    const mine = myBooking && myBooking.rideId === ride.id;
+    const isMyOwnRide = me && ride.driver === me;
+    const btn = mine
+      ? `<button data-pick="${ride.id}" class="btn-3d rounded-full px-4 py-2 bg-[var(--ink)] text-white font-round text-sm">✅ 선택됨 (취소)</button>`
+      : full
+        ? `<button disabled class="btn-3d rounded-full px-4 py-2 bg-white font-round text-sm">🈵 마감</button>`
+        : `<button data-pick="${ride.id}" class="btn-3d rounded-full px-4 py-2 bg-[var(--coral)] text-white font-round text-sm">이거 탈래요</button>`;
+    return `
+      <div class="sticker p-4 ${mine ? "ring-4 ring-[var(--aqua)]" : ""}">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="font-display text-xl truncate">🧑‍✈️ ${escapeHtml(ride.driver)}${isMyOwnRide ? ' <span class="font-round text-xs text-[var(--pool)]">(내 차)</span>' : ''}</div>
+            <div class="font-round text-[15px] text-[var(--ink)]/80 mt-0.5">📍 ${escapeHtml(ride.from)}</div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="font-display text-2xl ${full ? "text-[var(--ink)]/40" : "text-[var(--coral)]"}">${full ? 0 : left}</div>
+            <div class="font-round text-xs text-[var(--pool)]">남은자리</div>
+          </div>
+        </div>
+        <div class="mt-3 flex justify-end">${btn}</div>
+      </div>`;
+  }).join("");
+
+  els.rideList.querySelectorAll("[data-pick]").forEach(b=>{
+    b.addEventListener("click", ()=> pickRide(Number(b.dataset.pick)));
+  });
+}
+
+function renderStatus(data){
+  if(data.rides.length === 0){
+    els.statusList.innerHTML = `<div class="sticker p-4 text-center font-round text-[14px] text-[var(--ink)]/50">등록된 카풀이 없어요</div>`;
+    return;
+  }
+  els.statusList.innerHTML = data.rides.map(ride => {
+    const riders = data.bookings.filter(b => b.rideId === ride.id).map(b => b.rider);
+    const left = remaining(ride, data.bookings);
+    const chips = riders.length
+      ? riders.map(r => `<span class="tag bg-[var(--foam)] px-2.5 py-0.5 text-[13px] font-round">${escapeHtml(r)}</span>`).join(" ")
+      : `<span class="font-round text-[13px] text-[var(--ink)]/40">아직 없음</span>`;
+    return `
+      <div class="sticker p-4">
+        <div class="flex items-center justify-between">
+          <div class="font-display text-lg">🚗 ${escapeHtml(ride.driver)} <span class="font-round text-[13px] text-[var(--pool)]">· ${escapeHtml(ride.from)}</span></div>
+          <div class="font-round text-sm ${left<=0 ? "text-[var(--coral)] font-bold" : "text-[var(--pool)]"}">${left<=0 ? "마감" : "잔여 "+left}</div>
+        </div>
+        <div class="mt-2 flex flex-wrap gap-1.5 items-center">
+          <span class="font-round text-[13px] text-[var(--ink)]/60">🙋 ${riders.length}/${ride.seats}</span>
+          ${chips}
+        </div>
+      </div>`;
+  }).join("");
+}
+
+/* ---------- 액션 ---------- */
+function checkName(){
+  const me = myName();
+  if(!me){
+    els.nameWarn.textContent = "이름을 먼저 입력해 주세요!";
+    els.nameWarn.hidden = false;
+    els.myName.focus();
+    return false;
+  }
+  els.nameWarn.hidden = true;
+  return true;
+}
+
+/* 동명이인 경고(차단은 안 함) */
+function warnDuplicate(me){
+  const dup = DATA.rides.some(r => r.driver === me) || DATA.bookings.some(b => b.rider === me);
+  if(dup) toast(`⚠️ '${escapeHtml(me)}' 이름이 이미 있어요.<br>동명이인이면 이름 뒤에 표시를 더해주세요!`, "warn");
+}
+
+async function submitDriver(){
+  if(!ensureConfig() || !checkName()) return;
+  const me = myName();
+  const seats = Math.max(1, Math.min(CONFIG.MAX_SEATS, Number(els.seatCount.value) || 0));
+  const from = els.driverFrom.value.trim();
+  if(!from){ toast("출발 장소를 입력해 주세요 📍", "err"); els.driverFrom.focus(); return; }
+
+  warnDuplicate(me);
+  await withBusy(els.submitDriver, async ()=>{
+    const saved = await commit((d)=>{
+      const id = d.rides.length ? Math.max(...d.rides.map(r=>r.id)) + 1 : 1;
+      d.rides.push({ id, driver: me, seats, from });
+      return d;
+    });
+    // 재검증: 내 항목이 실제 반영됐는지 확인, 없으면 1회 재시도
+    let confirmed = saved.rides.some(r => r.driver === me && r.from === from);
+    if(!confirmed){
+      const retry = await commit((d)=>{
+        const id = d.rides.length ? Math.max(...d.rides.map(r=>r.id)) + 1 : 1;
+        d.rides.push({ id, driver: me, seats, from });
+        return d;
+      });
+      confirmed = retry.rides.some(r => r.driver === me && r.from === from);
+      render(retry);
+    } else {
+      render(saved);
+    }
+    if(confirmed){
+      toast("🎉 카풀 등록 완료! 탑승자를 기다려요", "ok");
+      els.driverFrom.value = "";
+    } else {
+      toast("⚠️ 등록 반영 확인 실패. 잠시 후 현황을 확인해 주세요", "err");
+    }
+  });
+}
+
+async function pickRide(rideId){
+  if(!ensureConfig() || !checkName()) return;
+  const me = myName();
+  await withBusy(els.refreshBtn, async ()=>{
+    const saved = await commit((d)=>{
+      const existing = d.bookings.find(b => b.rider === me);
+      // 같은 카풀을 다시 누르면 → 선택 취소(토글)
+      if(existing && existing.rideId === rideId){
+        d.bookings = d.bookings.filter(b => b.rider !== me);
+        return d;
+      }
+      // 좌석 마감 검증 (재검증된 최신 데이터 기준)
+      const ride = d.rides.find(r => r.id === rideId);
+      if(!ride) return null;
+      const left = remaining(ride, d.bookings.filter(b => b.rider !== me));
+      if(left <= 0){ pickRide._full = true; return null; }
+      // 이미 다른 카풀 선택했으면 교체
+      d.bookings = d.bookings.filter(b => b.rider !== me);
+      d.bookings.push({ rideId, rider: me });
+      return d;
+    });
+    render(saved);
+    if(pickRide._full){ pickRide._full = false; toast("😢 방금 마감됐어요! 다른 카풀을 골라주세요", "err"); return; }
+    const mine = saved.bookings.find(b => b.rider === me);
+    if(mine && mine.rideId === rideId){
+      const ride = saved.rides.find(r => r.id === rideId);
+      toast(`✅ '${escapeHtml(ride?.driver||"")}'님 카풀에 탑승!`, "ok");
+    } else {
+      toast("선택을 취소했어요", "info");
+    }
+  });
+}
+
+/* ---------- 로딩/에러 헬퍼 ---------- */
+async function withBusy(btn, fn){
+  const prev = btn.disabled;
+  btn.disabled = true;
+  try{
+    await fn();
+  }catch(e){
+    console.error(e);
+    toast(`⚠️ 통신 오류가 났어요.<br><button onclick="refresh()" class="underline font-bold">다시 시도</button>`, "err");
+  }finally{
+    btn.disabled = prev;
+  }
+}
+
+function ensureConfig(){
+  if(configReady()) return true;
+  toast("⚙️ 설정 필요: 코드 상단 CONFIG에<br>jsonbin BIN_ID / MASTER_KEY를 채워주세요", "warn");
+  return false;
+}
+
+/* ---------- 새로고침 / 폴링 ---------- */
+async function refresh(){
+  if(!configReady()){
+    els.statusMeta.textContent = "⚙️ 설정 미완료 — CONFIG를 채워주세요";
+    return;
+  }
+  els.refreshIcon.classList.add("spin");
+  try{
+    const data = await getData();
+    render(data);
+    const t = new Date();
+    els.statusMeta.textContent = `마지막 갱신 ${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}:${String(t.getSeconds()).padStart(2,"0")} · 약 ${CONFIG.POLL_MS/1000}초마다 자동 갱신`;
+  }catch(e){
+    console.error(e);
+    els.statusMeta.textContent = "⚠️ 불러오기 실패 — 새로고침을 눌러 다시 시도";
+  }finally{
+    els.refreshIcon.classList.remove("spin");
+  }
+}
+
+function startPolling(){
+  clearInterval(pollTimer);
+  pollTimer = setInterval(()=>{ if(!document.hidden) refresh(); }, CONFIG.POLL_MS);
+}
+
+/* ---------- 이벤트 바인딩 ---------- */
+els.roleDriver.addEventListener("click", ()=>{
+  if(!checkName()) return;
+  els.driverForm.hidden = false;
+  els.riderSection.hidden = true;
+  els.driverForm.classList.remove("pop"); void els.driverForm.offsetWidth; els.driverForm.classList.add("pop");
+  els.driverForm.scrollIntoView({ behavior:"smooth", block:"nearest" });
+});
+
+els.roleRider.addEventListener("click", ()=>{
+  if(!checkName()) return;
+  els.riderSection.hidden = false;
+  els.driverForm.hidden = true;
+  renderRideList(DATA);
+  els.riderSection.classList.remove("pop"); void els.riderSection.offsetWidth; els.riderSection.classList.add("pop");
+  els.riderSection.scrollIntoView({ behavior:"smooth", block:"nearest" });
+});
+
+els.seatMinus.addEventListener("click", ()=>{
+  els.seatCount.value = Math.max(1, (Number(els.seatCount.value)||1) - 1);
+});
+els.seatPlus.addEventListener("click", ()=>{
+  els.seatCount.value = Math.min(CONFIG.MAX_SEATS, (Number(els.seatCount.value)||1) + 1);
+});
+els.submitDriver.addEventListener("click", submitDriver);
+els.refreshBtn.addEventListener("click", refresh);
+els.myName.addEventListener("input", ()=>{
+  if(myName()) els.nameWarn.hidden = true;
+  // 이름이 바뀌면 목록의 "선택됨" 표시도 다시 그림
+  if(!els.riderSection.hidden) renderRideList(DATA);
+});
+
+// 이름 기억(편의) — localStorage
+els.myName.value = localStorage.getItem("carpool_name") || "";
+els.myName.addEventListener("change", ()=> localStorage.setItem("carpool_name", myName()));
+
+/* ---------- 시작 ---------- */
+refresh();
+startPolling();
+</script>
+</body>
+</html>
