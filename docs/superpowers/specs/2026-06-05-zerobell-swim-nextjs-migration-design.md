@@ -51,10 +51,12 @@ UX 요소별로 가장 잘하는 도구를 조합한다(배타 아님):
 RSC 프리페치 → 첫 화면을 데이터까지 렌더해 전송 (로딩 깜빡임 0)
    ↓ hydrate
 TanStack Query (클라이언트 캐시)
-   ├─ useQuery : 7초 refetchInterval 폴링 + refetchOnWindowFocus (신선도)
+   ├─ useQuery : queryFn = 읽기 Server Action, 7초 refetchInterval + refetchOnWindowFocus (신선도)
    └─ useMutation : onMutate 낙관적 즉시반영 + onError 롤백
-        mutationFn = Server Action  → 서버에서 jsonbin GET→merge→PUT 원자적, 키 숨김
+        mutationFn = 쓰기 Server Action  → 서버에서 jsonbin GET→merge→PUT 원자적, 키 숨김
 ```
+
+읽기·쓰기 모두 **Server Action(서버 함수)**로 처리한다. 서버 함수는 클라이언트에서 호출 가능하므로 별도 Route Handler는 두지 않는다(필요 시에만 추가).
 
 - **첫 화면**: RSC가 서버에서 데이터까지 렌더 → 현재 Astro의 "빈 화면 후 JS로 채움(카풀 없어요 깜빡임)" 제거.
 - **즉각 반응**: TanStack Query `onMutate` 낙관적 + 실패 시 자동 롤백 (현재 nanostores 동작과 동일 UX).
@@ -71,7 +73,7 @@ TanStack Query (클라이언트 캐시)
 - 마스터키는 루트 `.env`의 기존 키 재사용, **서버 전용** 환경변수로 저장:
   - `JSONBIN_BIN_ID` (PUBLIC_ 접두사 제거 — 브라우저 노출 안 됨)
   - `JSONBIN_MASTER_KEY`
-- 모든 jsonbin 호출은 Server Action / Route Handler를 통해서만 — 클라이언트 번들에 키 0노출.
+- 모든 jsonbin 호출은 Server Action(서버 함수)을 통해서만 — 클라이언트 번들에 키 0노출.
 - 비교 시작 전 테스트 bin을 `{ "users": [], "rides": [], "bookings": [], "items": [], "comments": [] }`로 시드.
 
 ## 7. UI / shadcn / 브랜드
