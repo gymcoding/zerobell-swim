@@ -134,14 +134,18 @@ body{
 
 [hidden]{ display:none !important; }
 
-/* ===== 페이지 전환(View Transitions) 깜빡임 제거 =====
- * ClientRouter의 SPA 이동/캐시 유지는 그대로 두고, 루트 크로스페이드
- * 애니메이션만 끈다. (카카오톡 인앱 브라우저 등 VT 지원 웹뷰에서
- * 앞으로 이동 시 고정 헤더가 페이드되며 깜빡이던 현상 방지 — 즉시 교체) */
+/* ===== 페이지 전환: 짧은 크로스페이드 (Astro ClientRouter / View Transitions) =====
+ * 네이티브 VT는 이전 화면 스냅샷을 깔아둔 채 새 화면을 페이드인 → 콘텐츠가
+ * 사라지는 프레임이 없어 (직접 만든 pop과 달리) 깜빡임 없이 부드럽게 전환됨. */
+::view-transition-old(root){ animation: .2s ease both vtFadeOut; }
+::view-transition-new(root){ animation: .2s ease both vtFadeIn; }
 ::view-transition-old(root),
-::view-transition-new(root){
-  animation: none !important;
-  mix-blend-mode: normal;
+::view-transition-new(root){ mix-blend-mode: normal; }
+@keyframes vtFadeOut{ to{ opacity: 0; } }
+@keyframes vtFadeIn{ from{ opacity: 0; } }
+@media (prefers-reduced-motion: reduce){
+  ::view-transition-old(root),
+  ::view-transition-new(root){ animation: none !important; }
 }
 
 @media (prefers-reduced-motion: reduce){
