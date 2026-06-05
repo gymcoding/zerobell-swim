@@ -20,6 +20,9 @@
 zerobell-swim-nextjs/
 ├─ next.config.ts                      # cacheComponents 미사용(기본), serverActions 기본
 ├─ .env.local                          # JSONBIN_BIN_ID / JSONBIN_MASTER_KEY (서버 전용)
+├─ AGENTS.md                           # Next 공식: "코딩 전 번들 docs 먼저 읽어라" (에이전트 자동 로드)
+├─ CLAUDE.md                           # `@AGENTS.md` 1줄 (Claude Code 서브에이전트 동일 규칙 상속)
+├─ .mcp.json                           # next-devtools-mcp (get_errors/get_routes 등 실시간 진단)
 ├─ vitest.config.ts                    # 순수 로직 테스트
 ├─ app/
 │  ├─ globals.css                      # 기존 global.css 포팅(브랜드 토큰·.sticker 등) + shadcn 토큰 매핑
@@ -119,17 +122,55 @@ JSONBIN_BIN_ID=6a22789bda38895dfe8ae248
 JSONBIN_MASTER_KEY=<루트 .env의 PUBLIC_JSONBIN_MASTER_KEY 값>
 ```
 
-- [ ] **Step 6: 빌드 확인 + 커밋**
+- [ ] **Step 6: 빌드 확인**
 
 Run:
 ```bash
 npm run build
 ```
 Expected: 기본 템플릿 빌드 성공.
+
+- [ ] **Step 7: AI 코딩 에이전트 준수 파일 (Next.js 공식 ai-agents 가이드)**
+
+Next 버전이 `>= 16.2`인지 확인(번들 docs `node_modules/next/dist/docs/` 존재 = 충족; MCP는 16+). `create-next-app@latest`가 `AGENTS.md`/`CLAUDE.md`를 이미 생성했으면 내용만 검증, 없으면 아래를 **`zerobell-swim-nextjs/` 루트에** 생성:
+
+`zerobell-swim-nextjs/AGENTS.md` (Next 관리 블록 — 마커 안 내용 그대로, 프로젝트 규칙은 마커 밖에):
+```md
+<!-- BEGIN:nextjs-agent-rules -->
+
+# Next.js: ALWAYS read docs before coding
+
+Before any Next.js work, find and read the relevant doc in `node_modules/next/dist/docs/`. Your training data is outdated — the docs are the source of truth.
+
+<!-- END:nextjs-agent-rules -->
+
+## 프로젝트 규칙 (zerobell-swim-nextjs)
+- UI는 상위 구현계획의 "UI 코딩 규칙" 준수: @theme 토큰, shadcn 제자리 리스타일, wrapper 금지.
+- 읽기=RSC(getDB)/Route Handler, 쓰기=Server Action. jsonbin 키는 서버 전용.
+```
+`zerobell-swim-nextjs/CLAUDE.md` (단 1줄 — Claude Code 서브에이전트가 동일 규칙 상속):
+```md
+@AGENTS.md
+```
+`zerobell-swim-nextjs/.mcp.json` (next-devtools MCP — 실시간 오류/라우트/Server Action 진단):
+```json
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    }
+  }
+}
+```
+> 주의: 이 `CLAUDE.md`는 회사 루트 `CLAUDE.md` 계층과 충돌하지 않음(하위 디렉토리 on-demand 로드, `@import`라 짧음). Next 관리 블록은 `BEGIN/END` 마커가 보호하므로 그 밖에만 우리 규칙을 둔다.
+
+- [ ] **Step 8: 커밋**
+
 ```bash
 cd /Users/gymcoding/Company/projects/zerobell-swim
 git add .gitignore zerobell-swim-nextjs
-git commit -m "feat(next): scaffold Next.js+Tailwind v4+shadcn 앱"
+git commit -m "feat(next): scaffold + AI-agents 준수(AGENTS.md/CLAUDE.md/.mcp.json)"
 ```
 
 ---
@@ -1226,6 +1267,12 @@ grep -rn "X-Master-Key\|JSONBIN_MASTER_KEY" .next/static 2>/dev/null || echo "OK
 ```
 Expected: `OK: 클라 번들에 키 없음`. 브라우저 Network 탭에서도 jsonbin 직접 호출/키 헤더가 안 보여야 함(모든 호출이 `/api/db` 또는 Server Action POST).
 
+- [ ] **Step 2.5: AI-agents 준수 + MCP 진단 루프 (Next.js 공식 검증 방식)**
+
+- `zerobell-swim-nextjs/`에 `AGENTS.md`·`CLAUDE.md(@AGENTS.md)`·`.mcp.json` 존재 확인, `node_modules/next/dist/docs/` 번들 docs 확인.
+- `npm run dev` 구동 상태에서 **`next-devtools-mcp`의 `get_errors`로 빌드/런타임/타입 오류 0** 확인(공식이 권장하는 에이전트 검증 루프 = dev 서버 + `get_errors`). `get_routes`로 `/`,`/carpool`,`/shop`,`/status` 라우트, `get_server_action_by_id`로 쓰기 액션 인식 확인.
+- (선택) Playwright MCP로 각 페이지 브라우저 렌더 검증.
+
 - [ ] **Step 3: 기능 동등성 수동 체크리스트** (spec 10 기준, 두 앱 동시 구동: Astro 4321 / Next 3000)
 
 - [ ] 로그인/로그아웃, 비로그인 시 `/carpool`·`/shop`·`/status` 접근 차단
@@ -1253,4 +1300,6 @@ git commit -m "docs(next): 통합 검증 + Astro vs Next 비교 메모"
 - **cacheComponents**: create-next-app 기본 비활성 전제(Task 1). 활성화 시 spec대로 `<Suspense>` 필요 — 본 계획은 비활성 기준.
 - **타입 일관성**: `DB_KEY`(`['db']`), reducer 시그니처 `(db, actor, payload)`, 액션명 `*Action`, `useRoomMutation({reduce, run})` 계약이 Task 8/12/14/15/16에서 일치.
 - **Server Action을 read에 미사용**: 초기 RSC=`getDB`(React.cache), 클라 폴링=`/api/db` Route Handler, 쓰기만 Server Action — 공식 문서 검증 반영.
-- **알려진 잔여 리스크**: 7초 interval 틱 vs 낙관적 경합은 `onSettled` invalidate로 정합(완전 차단 아님, 기존 Astro와 동일 수준). jsonbin last-write-wins 동시성 한계는 범위 외(spec 9).
+- **UI 시니어 표준(4팀 검증)**: `@theme` 토큰·`@theme inline` 브릿지·`@layer components`·`.dark`·`extendTailwindMerge`(Task 10), shadcn 제자리 리스타일=`button.tsx` `sticker` cva 변형(Task 11), arbitrary `bg-[var()]`→유틸(Task 14) — "UI 코딩 규칙" 섹션으로 전 UI 태스크 지배.
+- **AI-agents 공식 가이드 준수**: `AGENTS.md`(번들 docs 우선)·`CLAUDE.md(@AGENTS.md)`·`.mcp.json(next-devtools)`(Task 1 Step 7), 검증 루프=dev+`get_errors`(Task 17 Step 2.5). Next `>=16.2` 전제(번들 docs)·`>=16`(MCP).
+- **알려진 잔여 리스크**: 7초 interval 틱 vs 낙관적 경합은 `onSettled` invalidate로 정합(완전 차단 아님, 기존 Astro와 동일 수준). jsonbin last-write-wins 동시성 한계는 범위 외(spec 9). Next 버전이 16 미만이면 번들 docs/MCP 대신 `@next/codemod agents-md`(`.next-docs/`) 폴백 — Task 1 Step 7에서 분기.
