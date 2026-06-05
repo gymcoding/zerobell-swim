@@ -1,0 +1,31 @@
+<!-- 1단계: 로그인 (이름만) -->
+<section id="step-login" class="mt-6 pop">
+  <div class="sticker p-6">
+    <h2 class="font-display text-3xl flex items-center gap-2">
+      <span>🙋</span><span class="marker">이름만 알려주세요</span>
+    </h2>
+    <p class="font-round text-[16px] text-[var(--ink)]/75 mt-3 leading-relaxed">
+      누가 <span class="text-[var(--pool)]">운전</span>하고 누가 <span class="text-[var(--pool)]">탈지</span>,<br>
+      <span class="text-[var(--pool)]">장보기 항목</span>은 뭘 살지 같이 정하려고요 😊
+    </p>
+
+    <div class="mt-5 space-y-4">
+      <div>
+        <label class="font-round text-[18px] ml-1" for="loginName">내 이름</label>
+        <input id="loginName" class="field font-round mt-1.5" style="font-size:18px; padding:16px 16px;"
+               type="text" inputmode="text" autocomplete="off" maxlength="12"
+               placeholder="홍길동" />
+      </div>
+      <p id="loginWarn" class="font-round text-[15px] text-[var(--coral)] ml-1" hidden></p>
+      <button id="loginBtn" type="button"
+              class="btn-3d w-full rounded-[20px] bg-[var(--coral)] text-white font-round text-2xl"
+              style="min-height:64px;">
+        들어가기 →
+      </button>
+    </div>
+
+    <p class="font-round text-[13px] text-[var(--ink)]/45 mt-4 text-center">
+      이름만 입력하면 끝이에요 😊
+    </p>
+  </div>
+</section>

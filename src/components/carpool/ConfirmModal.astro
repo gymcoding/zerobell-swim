@@ -1,0 +1,21 @@
+<!-- 삭제 확인 모달 -->
+<div id="confirmModal" class="fixed inset-0 z-[60] flex items-center justify-center px-6" hidden>
+  <div id="confirmBackdrop" class="absolute inset-0 bg-black/40"></div>
+  <div class="sticker relative z-10 w-full max-w-[360px] p-6 pop text-center">
+    <div class="text-4xl">🗑️</div>
+    <h3 class="font-display text-2xl mt-2">삭제할까요?</h3>
+    <p id="confirmText" class="font-round text-[17px] text-[var(--ink)]/75 mt-2 leading-snug"></p>
+    <div class="mt-6 space-y-3">
+      <button id="confirmYes" type="button"
+              class="btn-3d w-full rounded-[18px] bg-[var(--coral)] text-white font-round text-xl"
+              style="min-height:60px;">
+        🗑️ 네, 삭제할게요
+      </button>
+      <button id="confirmNo" type="button"
+              class="btn-3d w-full rounded-[18px] bg-white font-round text-xl"
+              style="min-height:60px;">
+        취소
+      </button>
+    </div>
+  </div>
+</div>

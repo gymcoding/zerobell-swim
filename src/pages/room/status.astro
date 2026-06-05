@@ -1,0 +1,15 @@
+---
+import RoomLayout from '../../layouts/RoomLayout.astro';
+import StatusBoard from '../../components/carpool/StatusBoard.astro';
+---
+
+<RoomLayout
+  title="📋 실시간 현황 · 원정수영 준비방"
+  ogTitle="📋 통일로 원정수영 현황"
+  ogDescription="누가 운전하고 누가 탔는지 한눈에! 🌊"
+  headerTitle="실시간 현황"
+  backHref="/room"
+  page="status"
+>
+  <StatusBoard />
+</RoomLayout>

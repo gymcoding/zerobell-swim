@@ -1,0 +1,14 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+<!-- 실시간 현황 (읽기 전용) -->
+<section id="step-status" class="mt-6 pop">
+  <div class="flex items-center justify-end">
+    <button id="refreshBtn" type="button"
+            class="tag bg-white px-3 py-2 font-round text-[15px] active:translate-y-0.5 transition flex items-center gap-1.5 shrink-0">
+      <span id="refreshIcon" class="inline-flex"><Icon name="lucide:refresh-cw" class="w-4 h-4" /></span> 새로고침
+    </button>
+  </div>
+  <p id="statusMeta" class="font-round text-[13px] text-[var(--ink)]/50 mt-1 ml-1">불러오는 중…</p>
+  <div id="statusList" class="mt-3 space-y-3"></div>
+</section>

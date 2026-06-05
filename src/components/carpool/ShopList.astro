@@ -1,0 +1,43 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+<!-- 장보기 목록 -->
+<section id="step-shop" class="mt-6 pop">
+  <p class="font-round text-[15px] text-[var(--pool)] ml-1">살 거를 적고 추가 버튼을 누르면 바로 추가돼요 · 왼쪽은 적은 사람</p>
+
+  <!-- 빠른 추가 (페이지 이동 없이 바로) -->
+  <div class="sticker p-3 mt-3">
+    <div class="flex gap-2 items-stretch">
+      <input id="quickName" class="field font-round" style="font-size:18px; padding:14px;"
+             type="text" maxlength="30" placeholder="살 거 입력 (예: 삼겹살)" autocomplete="off" />
+      <button id="quickAdd" type="button" aria-label="추가"
+              class="btn-3d rounded-[16px] bg-[var(--coral)] text-white px-5 shrink-0 grid place-items-center">
+        <Icon name="lucide:plus" class="w-7 h-7" />
+      </button>
+    </div>
+  </div>
+
+  <div id="shopList" class="mt-4 space-y-3"></div>
+
+  <!-- 의견(댓글) -->
+  <div class="mt-9">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">💬</span>
+      <h2 class="font-display text-2xl"><span class="marker">의견 남기기</span></h2>
+    </div>
+    <p class="font-round text-[14px] text-[var(--pool)] mt-1 ml-1">하고 싶은 말·질문을 자유롭게!</p>
+
+    <div id="commentList" class="mt-3 space-y-2"></div>
+
+    <div class="sticker p-3 mt-3">
+      <div class="flex gap-2 items-stretch">
+        <input id="commentInput" class="field font-round" style="font-size:18px; padding:14px;"
+               type="text" maxlength="100" placeholder="의견을 적어주세요" autocomplete="off" />
+        <button id="commentBtn" type="button"
+                class="btn-3d rounded-[16px] bg-[var(--aqua)] text-white font-round text-lg px-4 shrink-0">
+          남기기
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

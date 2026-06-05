@@ -1,0 +1,19 @@
+---
+import RoomLayout from '../../layouts/RoomLayout.astro';
+import RoleChoice from '../../components/carpool/RoleChoice.astro';
+import DriverForm from '../../components/carpool/DriverForm.astro';
+import RideList from '../../components/carpool/RideList.astro';
+---
+
+<RoomLayout
+  title="🚗 카풀 매칭 · 원정수영 준비방"
+  ogTitle="🚗 통일로 원정수영 카풀 매칭"
+  ogDescription="운전자로 등록하거나 빈자리 골라 타기! 다 같이 영종 → 통일워터파크 🌊"
+  headerTitle="카풀 매칭"
+  backHref="/room"
+  page="carpool"
+>
+  <RoleChoice />
+  <DriverForm />
+  <RideList />
+</RoomLayout>

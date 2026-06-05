@@ -1,0 +1,77 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+
+export interface Props {
+  title: string;
+  description?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  /** 본문 래퍼 추가 클래스 (예: 카풀은 min-h-screen) */
+  wrapperClass?: string;
+}
+
+const {
+  title,
+  description = '',
+  ogTitle = title,
+  ogDescription = description,
+  ogImage,
+  wrapperClass = '',
+} = Astro.props;
+
+// 배포 origin 기준 절대 URL (Astro.site 미설정 시 현재 요청 origin 사용)
+const ogImageUrl = ogImage
+  ? new URL(ogImage, Astro.site ?? Astro.url).href
+  : undefined;
+// 현재 페이지의 정규 절대 URL (카카오 스크랩 캐시 키 / canonical)
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+const ogImageAlt = ogTitle;
+---
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="canonical" href={canonicalUrl} />
+  <ClientRouter fallback="swap" />
+  <title>{title}</title>
+  {description && <meta name="description" content={description} />}
+
+  <!-- OG / 카카오톡 단톡방 공유 미리보기 -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="제로벨 통일로 원정수영" />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:title" content={ogTitle} />
+  <meta property="og:description" content={ogDescription} />
+  <meta property="og:locale" content="ko_KR" />
+  {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+  {ogImageUrl && <meta property="og:image:secure_url" content={ogImageUrl} />}
+  {ogImageUrl && <meta property="og:image:type" content="image/png" />}
+  {ogImageUrl && <meta property="og:image:width" content="1200" />}
+  {ogImageUrl && <meta property="og:image:height" content="630" />}
+  {ogImageUrl && <meta property="og:image:alt" content={ogImageAlt} />}
+  <meta name="twitter:card" content={ogImageUrl ? 'summary_large_image' : 'summary'} />
+  <meta name="twitter:title" content={ogTitle} />
+  <meta name="twitter:description" content={ogDescription} />
+  {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+  <meta name="theme-color" content="#0096c7" />
+
+  <!-- Fonts -->
+  <link
+    rel="stylesheet"
+    crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+  />
+</head>
+
+<body class="antialiased">
+  <!-- 데스크탑에서도 모바일 폭으로 중앙 정렬 -->
+  <div class={`relative mx-auto w-full max-w-[460px] overflow-hidden ${wrapperClass}`} style="background:var(--cream)">
+    <slot />
+  </div>
+</body>
+</html>

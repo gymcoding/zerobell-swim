@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+/* =========================================================
+ *  브랜드 전역 스타일 (index + carpool 공통)
+ *  ⚠️ 전역 유지 필수 — 컴포넌트 scoped <style>에 넣으면
+ *     다른 컴포넌트의 클래스 참조가 깨짐.
+ * ========================================================= */
+
+:root{
+  --ocean:#0077b6;
+  --pool:#0096c7;
+  --aqua:#48cae4;
+  --sky:#90e0ef;
+  --foam:#caf0f8;
+  --sun:#ffd60a;
+  --mango:#ff9e00;
+  --coral:#ff5d73;
+  --pink:#ff7eb6;
+  --cream:#fffaf0;
+  --ink:#063047;
+}
+*{ -webkit-tap-highlight-color: transparent; }
+html{ scroll-behavior:smooth; }
+body{
+  font-family:'Pretendard','Pretendard Variable',system-ui,sans-serif;
+  color:var(--ink);
+  background:var(--cream);
+  overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
+}
+.font-display{ font-family:'Pretendard','Pretendard Variable',system-ui,sans-serif; font-weight:800; }
+.font-hand{ font-family:'Pretendard','Pretendard Variable',system-ui,sans-serif; font-weight:500; }
+.font-round{ font-family:'Pretendard','Pretendard Variable',system-ui,sans-serif; font-weight:600; }
+
+/* ===== Aurora / pool atmosphere ===== */
+.pool-bg{
+  background:
+    radial-gradient(120% 80% at 80% -10%, rgba(255,214,10,.55), transparent 55%),
+    radial-gradient(120% 90% at 0% 10%, rgba(255,93,115,.40), transparent 50%),
+    linear-gradient(160deg,#48cae4 0%,#0096c7 45%,#0077b6 100%);
+}
+.caustics{
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,.25) 0 8px, transparent 9px),
+    radial-gradient(circle at 70% 60%, rgba(255,255,255,.18) 0 6px, transparent 7px),
+    radial-gradient(circle at 45% 80%, rgba(255,255,255,.20) 0 5px, transparent 6px);
+  background-size:140px 140px,180px 180px,120px 120px;
+  animation:drift 14s linear infinite;
+}
+@keyframes drift{ to{ background-position:140px 0,-180px 90px,90px -120px; } }
+
+/* ===== Bubbles ===== */
+.bubble{
+  position:absolute; bottom:-40px; border-radius:9999px;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,.15));
+  box-shadow:inset 0 0 6px rgba(255,255,255,.6);
+  animation:rise linear infinite;
+  pointer-events:none;
+}
+@keyframes rise{
+  0%{ transform:translateY(0) scale(.6); opacity:0; }
+  15%{ opacity:.85; }
+  100%{ transform:translateY(-115vh) scale(1.1); opacity:0; }
+}
+
+/* ===== Entrance (랜딩 스크롤 등장) ===== */
+@keyframes pop{ 0%{ transform:translateY(28px) scale(.96); opacity:0; } 100%{ transform:none; opacity:1; } }
+.reveal{ opacity:0; }
+.reveal.in{ animation:pop .7s cubic-bezier(.2,.9,.25,1) forwards; }
+
+@keyframes wobble{ 0%,100%{ transform:rotate(-2.5deg); } 50%{ transform:rotate(2.5deg); } }
+.wobble{ animation:wobble 3.2s ease-in-out infinite; }
+
+@keyframes floaty{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-9px); } }
+.floaty{ animation:floaty 3s ease-in-out infinite; }
+
+@keyframes bob{ 0%,100%{ transform:translateY(0) rotate(-3deg);} 50%{ transform:translateY(-6px) rotate(3deg);} }
+
+/* ===== Grill / sizzle (메인 이벤트: 고기파티) ===== */
+@keyframes sizzle{ 0%,100%{ transform:translateY(0) rotate(-5deg) scale(1);} 50%{ transform:translateY(-6px) rotate(5deg) scale(1.1);} }
+.sizzle{ animation:sizzle 1.5s ease-in-out infinite; }
+@keyframes emberRise{ 0%{ transform:translateY(0) scale(.8); opacity:0;} 20%{ opacity:.9;} 100%{ transform:translateY(-90px) scale(.3); opacity:0;} }
+.ember{ position:absolute; bottom:14px; width:7px; height:7px; border-radius:9999px;
+  background:radial-gradient(circle at 40% 30%, #fff3, #ffd60a 40%, #ff5d73 90%);
+  filter:blur(.3px); animation:emberRise linear infinite; pointer-events:none; }
+@keyframes flameShine{ 0%{ background-position:0% 50%;} 100%{ background-position:200% 50%;} }
+.grill-glow{ box-shadow:5px 6px 0 var(--ink), 0 0 40px rgba(255,158,0,.5); }
+
+/* ===== 카드 / 칩 / 입력 ===== */
+.sticker{
+  border:3px solid var(--ink);
+  box-shadow:5px 6px 0 var(--ink);
+  border-radius:26px;
+  background:#fff;
+}
+.tag{
+  border:2.5px solid var(--ink);
+  box-shadow:3px 3px 0 var(--ink);
+  border-radius:9999px;
+}
+.marker{ background:linear-gradient(transparent 58%, var(--sun) 58% 92%, transparent 92%); }
+
+.btn-3d{
+  border:3px solid var(--ink);
+  box-shadow:4px 5px 0 var(--ink);
+  transition:all .12s;
+}
+.btn-3d:active{ transform:translateY(2px); box-shadow:2px 2px 0 var(--ink); }
+.btn-3d:disabled{ opacity:.45; box-shadow:2px 2px 0 var(--ink); cursor:not-allowed; }
+
+.field{
+  border:2.5px solid var(--ink);
+  border-radius:16px;
+  background:#fff;
+  padding:12px 14px;
+  width:100%;
+  font-size:16px; /* iOS 줌 방지 */
+  outline:none;
+}
+.field:focus{ box-shadow:3px 3px 0 var(--aqua); }
+
+/* ===== 카풀 카드 등장 (이름 충돌 방지: 키프레임 popcard) ===== */
+@keyframes popcard{ 0%{ transform:translateY(14px) scale(.98); opacity:0; } 100%{ transform:none; opacity:1; } }
+.pop{ animation:popcard .35s cubic-bezier(.2,.9,.25,1) both; }
+
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.spin{ animation:spin .8s linear infinite; }
+
+/* ===== CTA pulse ===== */
+@keyframes pulseRing{ 0%{ box-shadow:0 0 0 0 rgba(255,93,115,.55);} 70%{ box-shadow:0 0 0 16px rgba(255,93,115,0);} 100%{ box-shadow:0 0 0 0 rgba(255,93,115,0);} }
+.cta-pulse{ animation:pulseRing 2.2s infinite; }
+
+.safe-bottom{ padding-bottom:calc(14px + env(safe-area-inset-bottom)); }
+
+[hidden]{ display:none !important; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; scroll-behavior:auto; }
+  .reveal{ opacity:1; }
+}

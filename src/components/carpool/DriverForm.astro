@@ -1,0 +1,51 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+<!-- 운전자 등록 -->
+<section id="step-driver" class="mt-6 pop" hidden>
+  <button type="button" data-role-back
+          class="font-round text-[16px] text-[var(--ink)]/60 px-2 py-2 active:translate-y-0.5 transition">
+    ← 역할 다시
+  </button>
+  <!-- 이미 등록한 경우: 내 카풀 + 취소 (script가 채움/토글) -->
+  <div id="driverExisting" class="mt-2" hidden>
+    <div class="sticker p-6" style="background:linear-gradient(180deg,#e8fff1,#fff)">
+      <h2 class="font-display text-2xl flex items-center gap-2"><span>✅</span><span class="marker">이미 등록했어요</span></h2>
+      <div id="driverMineBody" class="mt-3 font-round text-[17px]"></div>
+      <button id="cancelDriver" type="button"
+              class="btn-3d w-full rounded-[18px] bg-white text-[var(--coral)] font-round text-lg mt-5 flex items-center justify-center gap-2"
+              style="min-height:60px;">
+        <Icon name="lucide:trash-2" class="w-5 h-5" /> 내 카풀 등록 취소
+      </button>
+    </div>
+  </div>
+
+  <!-- 등록 폼 -->
+  <div id="driverFormBody" class="mt-2">
+    <div class="sticker p-6">
+      <h2 class="font-display text-2xl flex items-center gap-2"><span>🧑‍✈️</span><span class="marker">카풀 등록</span></h2>
+      <div class="mt-5 space-y-5">
+        <div>
+          <label class="font-round text-[18px] ml-1">🚪 몇 명 태울 수 있어요?</label>
+          <div class="flex items-center justify-center gap-4 mt-2">
+            <button type="button" id="seatMinus" aria-label="줄이기" class="btn-3d rounded-full w-14 h-14 bg-white grid place-items-center"><Icon name="lucide:minus" class="w-7 h-7" /></button>
+            <input id="seatCount" class="field font-display text-3xl text-center" style="max-width:100px; font-size:28px;"
+                   type="number" inputmode="numeric" min="1" max="8" value="3" />
+            <button type="button" id="seatPlus" aria-label="늘리기" class="btn-3d rounded-full w-14 h-14 bg-white grid place-items-center"><Icon name="lucide:plus" class="w-7 h-7" /></button>
+            <span class="font-round text-lg text-[var(--pool)]">명</span>
+          </div>
+        </div>
+        <div>
+          <label class="font-round text-[18px] ml-1">📍 어디서 출발해요?</label>
+          <input id="driverFrom" class="field font-round mt-2" style="font-size:18px; padding:16px;"
+                 type="text" maxlength="30" placeholder="예) 하늘도시 홈플러스 앞" />
+        </div>
+        <button id="submitDriver" type="button"
+                class="btn-3d w-full rounded-[20px] bg-[var(--coral)] text-white font-round text-2xl"
+                style="min-height:64px;">
+          🚗 등록하기
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

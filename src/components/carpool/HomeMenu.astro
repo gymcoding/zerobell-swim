@@ -1,0 +1,34 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+<!-- 메인 메뉴 (로그인 후) -->
+<section id="step-home" class="mt-6 pop" hidden>
+  <div class="text-center">
+    <p class="font-round text-2xl"><b id="homeGreet" class="text-[var(--ocean)]"></b>님</p>
+    <p class="font-round text-xl mt-1">안녕하세요! 👋 무엇을 할까요?</p>
+  </div>
+
+  <div class="mt-6 space-y-4">
+    <a href="/room/carpool"
+       class="btn-3d w-full rounded-[24px] bg-[var(--sun)] font-round text-2xl flex items-center justify-center gap-3"
+       style="min-height:104px;">
+      <span class="text-4xl">🚗</span> 카풀 매칭
+    </a>
+    <a href="/room/shop"
+       class="btn-3d w-full rounded-[24px] bg-[var(--aqua)] text-white font-round text-2xl flex items-center justify-center gap-3"
+       style="min-height:104px;">
+      <span class="text-4xl">🛒</span> 장보기 목록
+    </a>
+  </div>
+
+  <div class="mt-7 flex items-center justify-between gap-3">
+    <a href="/room/status"
+       class="tag bg-white px-4 py-2.5 font-round text-[16px] active:translate-y-0.5 transition flex items-center gap-1.5">
+      <Icon name="lucide:clipboard-list" class="w-5 h-5" /> 카풀 현황
+    </a>
+    <button id="logoutBtn" type="button"
+            class="tag bg-white px-4 py-2.5 font-round text-[16px] active:translate-y-0.5 transition flex items-center gap-1.5">
+      <Icon name="lucide:log-out" class="w-5 h-5" /> 로그아웃
+    </button>
+  </div>
+</section>

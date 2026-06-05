@@ -24,9 +24,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 <!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gaegu:wght@700&family=Jua&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 
 <style>
@@ -52,9 +49,9 @@
     overflow-x:hidden;
     -webkit-text-size-adjust:100%;
   }
-  .font-display{ font-family:'Black Han Sans',sans-serif; }
-  .font-hand{ font-family:'Gaegu',cursive; }
-  .font-round{ font-family:'Jua',sans-serif; }
+  .font-display{ font-family:'Pretendard','Pretendard Variable',system-ui,sans-serif; font-weight:800; }
+  .font-hand{ font-family:'Pretendard','Pretendard Variable',system-ui,sans-serif; font-weight:500; }
+  .font-round{ font-family:'Pretendard','Pretendard Variable',system-ui,sans-serif; font-weight:600; }
 
   /* ===== Aurora / pool atmosphere ===== */
   .pool-bg{
@@ -407,6 +404,13 @@
           💬 오픈채팅방 입장하기
         </span>
       </a>
+
+      <!-- 오픈채팅 입장코드 -->
+      <div class="sticker mt-4 p-4" style="background:linear-gradient(180deg,#fff7e6,#fff)">
+        <p class="font-round text-sm text-[var(--ink)]/70">🔑 입장코드 <span class="text-[var(--coral)] font-bold">(7시 강습이니까 럭키세븐!)</span></p>
+        <div class="font-display text-4xl tracking-[0.25em] text-[var(--ocean)] mt-1">7️⃣7️⃣7️⃣7️⃣</div>
+        <p class="font-round text-sm text-[var(--ink)]/60 mt-1">입장 시 <b class="text-[var(--ink)]">7777</b> 입력하면 끝! 🎉</p>
+      </div>
     </section>
 
     <footer class="text-center mt-12 font-hand text-[var(--pool)] text-lg">

@@ -1,0 +1,27 @@
+---
+/**
+ * 공통 모바일 앱 헤더 (고정 상단 바)
+ * - 뒤로/홈은 실제 <a> 링크 → ClientRouter가 SPA 전환 처리(JS 불필요).
+ * - BaseLayout 래퍼가 overflow-hidden이라 sticky 대신 fixed + 중앙정렬.
+ */
+import { Icon } from 'astro-icon/components';
+
+export interface Props {
+  title: string;
+  backHref?: string;
+}
+const { title, backHref = '/room' } = Astro.props;
+
+const pill =
+  'shrink-0 grid place-items-center w-11 h-11 rounded-full bg-white border-[2.5px] border-[var(--ink)] shadow-[2px_2px_0_var(--ink)] active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] transition';
+---
+
+<header
+  class="fixed top-0 left-1/2 -translate-x-1/2 z-40 w-full max-w-[460px] pool-bg text-white border-b-[3px] border-[var(--ink)] shadow-[0_4px_0_rgba(6,48,71,.18)]"
+>
+  <div class="flex items-center gap-2 px-3" style="min-height:56px; padding-top:env(safe-area-inset-top);">
+    <a href={backHref} aria-label="뒤로" class={`${pill} text-[var(--ink)]`}><Icon name="lucide:arrow-left" class="w-6 h-6" /></a>
+    <h1 class="flex-1 text-center font-display text-xl leading-none truncate drop-shadow-[2px_2px_0_rgba(6,48,71,.35)]">{title}</h1>
+    <a href="/room" aria-label="처음으로" class={`${pill} text-[var(--ink)]`}><Icon name="lucide:house" class="w-6 h-6" /></a>
+  </div>
+</header>
