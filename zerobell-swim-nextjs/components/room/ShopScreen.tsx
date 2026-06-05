@@ -8,6 +8,7 @@ import { useSession } from '@/hooks/use-session';
 import * as R from '@/lib/reducers';
 import { addItemAction, deleteItemAction } from '@/app/actions';
 import { useConfirm } from '@/components/room/ConfirmDialog';
+import { Comments } from '@/components/room/Comments';
 import { cn } from '@/lib/utils';
 
 export function ShopScreen() {
@@ -138,6 +139,9 @@ export function ShopScreen() {
           })
         )}
       </div>
+
+      {/* 의견(댓글) */}
+      <Comments />
     </section>
   );
 }

@@ -1,27 +1,10 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { RefreshCw, Trash2 } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useDB, useRoomMutation, DB_KEY } from '@/hooks/use-db';
-import { useSession } from '@/hooks/use-session';
+import { useDB, DB_KEY } from '@/hooks/use-db';
 import { remaining } from '@/lib/domain';
-import * as R from '@/lib/reducers';
-import { addCommentAction, deleteCommentAction } from '@/app/actions';
-import { useConfirm } from '@/components/room/ConfirmDialog';
 import { cn } from '@/lib/utils';
-
-/* ---------- timeAgo (ported from room.ts) ---------- */
-function timeAgo(at: number): string {
-  if (!at) return '';
-  const s = Math.floor((Date.now() - at) / 1000);
-  if (s < 60) return '방금';
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}분 전`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}시간 전`;
-  return `${Math.floor(h / 24)}일 전`;
-}
 
 /* ---------- updateStatusMeta (ported from room.ts) ---------- */
 function formatMeta(ts: number): string {
@@ -32,58 +15,15 @@ function formatMeta(ts: number): string {
 
 export function StatusScreen() {
   const { data: db, dataUpdatedAt, isFetching } = useDB();
-  const mut = useRoomMutation();
-  const { name: me } = useSession();
-  const confirm = useConfirm();
   const qc = useQueryClient();
-
-  const [commentText, setCommentText] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const rides = db?.rides ?? [];
   const bookings = db?.bookings ?? [];
-  const comments = db?.comments ?? [];
-
-  /* ---------- 댓글 추가 ---------- */
-  function addComment() {
-    const text = commentText.trim();
-    if (!text) {
-      inputRef.current?.focus();
-      return;
-    }
-    const at = Date.now();
-    mut.mutate({
-      reduce: (d) => R.addComment(d, me, { text, at }),
-      run: () => addCommentAction(me, { text, at }),
-    });
-    setCommentText('');
-    setTimeout(() => inputRef.current?.focus(), 0);
-  }
-
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key !== 'Enter') return;
-    if (e.nativeEvent.isComposing || e.keyCode === 229) return;
-    e.preventDefault();
-    addComment();
-  }
-
-  /* ---------- 댓글 삭제 ---------- */
-  function askDeleteComment(id: number) {
-    confirm('이 댓글을 지울까요?', () => {
-      mut.mutate({
-        reduce: (d) => R.deleteComment(d, me, { id }),
-        run: () => deleteCommentAction(me, { id }),
-      });
-    });
-  }
 
   /* ---------- 새로고침 ---------- */
   function handleRefresh() {
     qc.invalidateQueries({ queryKey: DB_KEY });
   }
-
-  /* ---------- 정렬된 댓글 ---------- */
-  const sortedComments = [...comments].sort((a, b) => a.at - b.at);
 
   return (
     <section id="step-status" className="mt-6">
@@ -149,76 +89,6 @@ export function StatusScreen() {
             );
           })
         )}
-      </div>
-
-      {/* 댓글 섹션 (renderComments + addComment) */}
-      <div className="mt-8">
-        <h2 className="font-display text-xl ml-1 mb-3">💬 자유 게시판</h2>
-
-        {/* 입력 */}
-        <div className="sticker p-3">
-          <div className="flex gap-2 items-stretch">
-            <input
-              ref={inputRef}
-              id="commentInput"
-              className="field font-round"
-              style={{ fontSize: '16px', padding: '12px 14px' }}
-              type="text"
-              maxLength={200}
-              placeholder="의견을 남겨보세요"
-              aria-label="댓글 입력"
-              autoComplete="off"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-            <button
-              id="commentBtn"
-              type="button"
-              onClick={addComment}
-              className="btn-3d rounded-[16px] bg-coral text-white px-5 shrink-0 grid place-items-center font-round text-[15px]"
-            >
-              등록
-            </button>
-          </div>
-        </div>
-
-        {/* 목록 */}
-        <div id="commentList" className="mt-3 space-y-2">
-          {sortedComments.length === 0 ? (
-            <div className="font-round text-[14px] text-ink/45 ml-1">
-              아직 의견이 없어요. 첫 의견을 남겨보세요!
-            </div>
-          ) : (
-            sortedComments.map((c) => {
-              const mineC = !!me && c.by === me;
-              return (
-                <div key={c.id} className="sticker p-3 flex items-start gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="font-round text-[15px]">
-                      <b className="text-ocean">{c.by}</b>{' '}
-                      <span className="text-[12px] text-ink/40">{timeAgo(c.at)}</span>
-                    </div>
-                    <div className="font-round text-[16px] mt-0.5 break-words whitespace-pre-wrap">
-                      {c.text}
-                    </div>
-                  </div>
-                  {mineC && (
-                    <button
-                      type="button"
-                      aria-label="삭제"
-                      onClick={() => askDeleteComment(c.id)}
-                      className="shrink-0 text-coral grid place-items-center"
-                      style={{ minWidth: '44px', minHeight: '44px' }}
-                    >
-                      <Trash2 className="w-[18px] h-[18px]" />
-                    </button>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
       </div>
     </section>
   );
