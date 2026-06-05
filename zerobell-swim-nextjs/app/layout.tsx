@@ -4,6 +4,7 @@ import { Providers } from './providers';
 import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.SITE_URL || 'https://zerobell-swim.vercel.app'),
   title: '🌊 원정수영 준비방 · 카풀 & 장보기',
   description: '카풀 매칭 + 장보기 목록을 한 곳에서!',
 };
