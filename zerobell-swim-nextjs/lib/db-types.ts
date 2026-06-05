@@ -8,3 +8,6 @@ export interface DB { users: User[]; rides: Ride[]; bookings: Booking[]; items: 
 export const MAX_SEATS = 8;
 export const POLL_MS = 7000;
 export const EMPTY_DB: DB = { users: [], rides: [], bookings: [], items: [], comments: [] };
+
+/** TanStack Query 키 — 서버(RSC 프리페치)·클라(useDB) 공용 단일 출처 */
+export const DB_KEY = ['db'] as const;

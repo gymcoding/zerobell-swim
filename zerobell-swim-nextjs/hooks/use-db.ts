@@ -1,9 +1,9 @@
 'use client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { POLL_MS, type DB } from '@/lib/db-types';
+import { POLL_MS, DB_KEY, type DB } from '@/lib/db-types';
 import { toast } from 'sonner';
 
-export const DB_KEY = ['db'] as const;
+export { DB_KEY }; // 호환 재노출 (단일 출처는 lib/db-types)
 
 async function fetchDB(): Promise<DB> {
   const res = await fetch('/api/db', { cache: 'no-store' });
