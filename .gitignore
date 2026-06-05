@@ -11,3 +11,7 @@ node_modules/
 .DS_Store
 .playwright-mcp/
 .superpowers/
+# Next.js subapp
+zerobell-swim-nextjs/node_modules
+zerobell-swim-nextjs/.next
+zerobell-swim-nextjs/.env*.local
