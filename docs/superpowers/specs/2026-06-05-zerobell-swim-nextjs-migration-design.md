@@ -48,21 +48,27 @@ Next.js(App Router) + TypeScript · Tailwind **v4** · shadcn/ui · jsonbin(서�
 UX 요소별로 가장 잘하는 도구를 조합한다(배타 아님):
 
 ```
-RSC 프리페치 → 첫 화면을 데이터까지 렌더해 전송 (로딩 깜빡임 0)
-   ↓ hydrate
-TanStack Query (클라이언트 캐시)
-   ├─ useQuery : queryFn = 읽기 Server Action, 7초 refetchInterval + refetchOnWindowFocus (신선도)
-   └─ useMutation : onMutate 낙관적 즉시반영 + onError 롤백
-        mutationFn = 쓰기 Server Action  → 서버에서 jsonbin GET→merge→PUT 원자적, 키 숨김
+RSC 프리페치(plain async 서버함수 + React.cache) → 첫 화면을 데이터까지 렌더 (깜빡임 0)
+   ↓ dehydrate / <HydrationBoundary>
+TanStack Query (클라이언트 캐시, 'use client' 프로바이더, per-request QueryClient)
+   ├─ useQuery : queryFn = GET Route Handler(/api/db), 7초 refetchInterval + refetchOnWindowFocus
+   │             defaultOptions.staleTime > 0  ← hydrate 직후 즉시 refetch 방지(핵심)
+   └─ useMutation : onMutate(낙관적 + cancelQueries) → onError(롤백) → onSettled(invalidate)
+        mutationFn = 쓰기 Server Action → 서버에서 GET→merge→PUT, 키 숨김 + 소유권 재검증
 ```
 
-읽기·쓰기 모두 **Server Action(서버 함수)**로 처리한다. 서버 함수는 클라이언트에서 호출 가능하므로 별도 Route Handler는 두지 않는다(필요 시에만 추가).
+**경로 분리 (공식 문서 권장 — 4개 doc 검증 반영):**
+- **초기 RSC 읽기**: `'use server'` 아님. 평범한 async 서버 함수를 `React.cache`로 감싸 per-request 메모이즈 + 전역 `fetch(url, { cache: 'no-store' })`. (Server Action을 read에 쓰는 건 비관용 — POST 왕복.)
+- **클라이언트 폴링 읽기**: **GET Route Handler `/api/db`** — 브라우저에서 호출하되 키는 서버에 유지. (`queryFn`이 호출할 클라이언트-접근 엔드포인트 필요.)
+- **쓰기**: `'use server'` Server Action(`mutationFn`). **POST 공개 엔드포인트이므로 액션 내부에서 소유권/검증을 다시 수행**(키 숨김만으론 불충분 — Server Action은 UI 밖에서도 직접 호출 가능).
 
-- **첫 화면**: RSC가 서버에서 데이터까지 렌더 → 현재 Astro의 "빈 화면 후 JS로 채움(카풀 없어요 깜빡임)" 제거.
-- **즉각 반응**: TanStack Query `onMutate` 낙관적 + 실패 시 자동 롤백 (현재 nanostores 동작과 동일 UX).
-- **신선도**: `refetchInterval` 7초 폴링 + 포커스 재검증.
-- **쓰기 중 덮어쓰기 방지**: mutation in-flight 동안 해당 쿼리 invalidate를 보류(현재 `syncIfIdle` 대응).
-- **유실 완화**: merge를 서버(Server Action)에서 원자적으로 수행 → 클라 merge보다 경합 창 축소.
+세부 동작:
+- **첫 화면**: RSC가 서버에서 데이터까지 렌더 → 현재 Astro의 "빈 화면 후 JS로 채움(깜빡임)" 제거. 단 **blocking render라 jsonbin 첫 응답이 느리면 내비가 지연됨** → jsonbin 응답이 빠르다는 전제, 느려지면 `<Suspense>`/`loading.js` 스트리밍으로 전환(대신 로딩 상태 재등장 = 트레이드오프).
+- **즉각 반응**: `onMutate` 낙관적 + `onError` 롤백. `onMutate` 안에서 **반드시 `await cancelQueries`**(진행 중 refetch가 낙관적 값 덮어쓰는 것 방지 — 공식 패턴).
+- **신선도 vs 낙관적 경합**: `cancelQueries`는 *진행 중* refetch만 취소하고 **7초 interval 틱은 못 막음**. 필요 시 `refetchInterval`을 `useIsMutating()`으로 게이팅(문서 보장 아님, 커스텀) + `onSettled` invalidate로 최종 정합.
+- **유실 완화**: merge를 서버에서 수행 → 클라 merge보다 경합 창 축소. 단 **jsonbin은 트랜잭션 없어 "원자적"이 아님**(9번 한계 참고).
+- **계약**: `queryFn`/`mutationFn`은 `undefined` 반환 금지 — 빈 결과는 `null` 반환, 실패는 **throw**(안 그러면 `onError` 미발동).
+- **보안**: 서버→클라 직렬화 payload(props/dehydrate state)에 **마스터키가 절대 포함되지 않도록** — 문서 데이터만 반환.
 
 데이터 모델은 현재와 동일 유지(호환):
 `DB = { users, rides, bookings, items, comments }` (`lib/jsonbin.ts`의 타입 그대로 이식).
@@ -73,8 +79,16 @@ TanStack Query (클라이언트 캐시)
 - 마스터키는 루트 `.env`의 기존 키 재사용, **서버 전용** 환경변수로 저장:
   - `JSONBIN_BIN_ID` (PUBLIC_ 접두사 제거 — 브라우저 노출 안 됨)
   - `JSONBIN_MASTER_KEY`
-- 모든 jsonbin 호출은 Server Action(서버 함수)을 통해서만 — 클라이언트 번들에 키 0노출.
+- 모든 jsonbin 호출은 서버측(RSC 서버함수 / Route Handler / Server Action)에서만 — 클라이언트 번들에 키 0노출.
 - 비교 시작 전 테스트 bin을 `{ "users": [], "rides": [], "bookings": [], "items": [], "comments": [] }`로 시드.
+
+**캐싱 가드레일 (Next 캐싱이 "항상 최신"을 조용히 깨지 않도록):**
+- 모든 jsonbin `fetch`에 `{ cache: 'no-store' }` 명시 (기본도 uncached지만 의도 명시·future-proof).
+- 초기 RSC 읽기 라우트에 `export const dynamic = 'force-dynamic'`(또는 `revalidate = 0`) — `fetchCache` 기본 정렬로 인한 정적 최적화 방지.
+- `force-cache`/`use cache`는 읽기 경로에 **절대 적용 안 함**.
+- `next.config`의 `cacheComponents` 활성 여부 확인 — 활성이면 라이브 데이터 RSC를 `<Suspense>`로 감싸고 `use cache` 미적용(미준수 시 빌드 에러), `dynamic`/`revalidate` 세그먼트 설정은 이 모델에선 무효.
+- TanStack의 7초 폴링은 Next 서버 캐시와 무관 — 서버 캐시는 **초기 SSR payload에만** 영향. 가드레일을 초기 읽기에만 한정(과설계 금지).
+- 표시 데이터는 hydrate 후 클라이언트 TanStack 캐시가 주도하므로 `revalidatePath`/`revalidateTag`는 **의도적으로 생략**(Next Data Cache를 채우지 않음). 전체 새로고침 시 RSC가 다시 fresh로 실행되어 무방.
 
 ## 7. UI / shadcn / 브랜드
 
@@ -104,6 +118,7 @@ TanStack Query (클라이언트 캐시)
 - **jsonbin이 UX 천장**: 단일 문서 last-write-wins → 마지막 좌석 동시 예약 시 한 명 유실 가능. 트랜잭션/락 없어 서버 merge로도 완전 방지 불가.
 - 무료 API 레이트리밋·폴링 지연이 신선도 상한.
 - **진짜 best UX 잠금해제는 Postgres(제약·트랜잭션)+실시간** — 이번 비교 범위 밖, 다음 단계 과제로 분리.
+- **인증 한계**: 쓰기 Server Action은 UI 밖에서도 직접 호출 가능한 공개 POST 엔드포인트. 소유권 검증(본인 항목만 수정/삭제)은 **액션 내부 서버측에서** 재수행하지만, "누구인가"가 이름 기반이라 **스푸핑 가능**(현재 Astro와 동일한 신뢰그룹 전제). 진짜 인증은 SaaS 단계 과제.
 
 ## 10. 검증 체크리스트
 
